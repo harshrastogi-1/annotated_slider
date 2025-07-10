@@ -40,7 +40,6 @@ class AnnotatedSlider extends StatefulWidget {
     this.allowedInteraction,
     this.markerLabel,
     this.markerLabelPosition,
-    this.markerShape,
   }) : _sliderType = _SliderType.material,
        assert(min <= max),
        assert(
@@ -76,7 +75,6 @@ class AnnotatedSlider extends StatefulWidget {
     this.allowedInteraction,
     this.markerLabel,
     this.markerLabelPosition,
-    this.markerShape,
   }) : _sliderType = _SliderType.adaptive,
        assert(min <= max),
        assert(
@@ -115,7 +113,6 @@ class AnnotatedSlider extends StatefulWidget {
   final _SliderType _sliderType;
   final String? markerLabel;
   final double? markerLabelPosition;
-  final SliderComponentShape? markerShape;
   @override
   State<AnnotatedSlider> createState() => _AnnotatedSliderState();
   @override
@@ -1379,21 +1376,15 @@ class _RenderSlider extends RenderBox with RelayoutWhenSystemFontsChangeMixin {
       isEnabled: isInteractive,
     );
 
-    final double midX =
-        trackRect.left + trackRect.width / (_markerLabelPosition ?? 1);
-    final double midY = trackRect.center.dy;
-    const double padding = 15.0;
-    // Center of your circle
-    final Offset markerPosition = offset + Offset(midX, midY);
-
-    // Radius of the container (adjust as needed)
     const double containerRadius = 6.0;
 
-    // 1) Build your TextSpan with the style you provide
-    // 2) Create and layout the TextPainter
-    // 3) Compute a paint-offset so the text is centered above the dot
+    // Use decimal position directly (e.g., 0.6 for 60%)
+    final double midX =
+        trackRect.left + trackRect.width * (_markerLabelPosition ?? 0.0);
+    final double midY = trackRect.center.dy + 5;
 
-    // 4) Paint the text
+    final Offset markerPosition = offset + Offset(midX, midY);
+    // 1) Build your TextSpan with the style you provide
     if (_markerLabel != null) {
       _markerLabelTextPainter
         ..text = TextSpan(
@@ -1414,18 +1405,21 @@ class _RenderSlider extends RenderBox with RelayoutWhenSystemFontsChangeMixin {
       _markerLabelTextPainter.paint(context.canvas, textOffset);
       _markerLabelTextPainter.paint(context.canvas, textOffset);
     }
-    // Paint for the white fill
-    final Paint fillPaint =
-        Paint()
-          ..color = Colors.white
-          ..style = PaintingStyle.fill;
 
-    // Paint for the green border
-    final Paint borderPaint =
-        Paint()
-          ..color = Colors.green
-          ..style = PaintingStyle.stroke
-          ..strokeWidth = 4.0;
+    if (_sliderTheme.markerShape != null) {
+      _sliderTheme.markerShape!.paint(
+        context,
+        offset,
+        parentBox: this,
+        sliderTheme: _sliderTheme,
+        enableAnimation: _enableAnimation,
+        textDirection: _textDirection,
+        thumbCenter: thumbCenter,
+        secondaryOffset: secondaryOffset,
+        isDiscrete: isDiscrete,
+        isEnabled: isInteractive,
+      );
+    }
 
     if (!_overlayAnimation.isDismissed) {
       _sliderTheme.overlayShape!.paint(
@@ -1477,7 +1471,7 @@ class _RenderSlider extends RenderBox with RelayoutWhenSystemFontsChangeMixin {
         }
       }
     }
-
+    const double tolerance = 0.05; // 1% match
     if (isInteractive &&
         label != null &&
         !_valueIndicatorAnimation.isDismissed) {
@@ -1499,6 +1493,20 @@ class _RenderSlider extends RenderBox with RelayoutWhenSystemFontsChangeMixin {
               sizeWithOverflow: screenSize.isEmpty ? size : screenSize,
             );
           }
+          if ((_value - _markerLabelPosition!).abs() < tolerance) {
+            _sliderTheme.markerShape?.paint(
+              context,
+              offset,
+              parentBox: this,
+              sliderTheme: _sliderTheme,
+              enableAnimation: _enableAnimation,
+              textDirection: _textDirection,
+              thumbCenter: thumbCenter,
+              secondaryOffset: secondaryOffset,
+              isDiscrete: isDiscrete,
+              isEnabled: isInteractive,
+            );
+          }
         };
       }
     }
@@ -1517,16 +1525,20 @@ class _RenderSlider extends RenderBox with RelayoutWhenSystemFontsChangeMixin {
       textScaleFactor: textScaleFactor,
       sizeWithOverflow: screenSize.isEmpty ? size : screenSize,
     );
-    // Draw the white circle
-    context.canvas.drawCircle(markerPosition, containerRadius, fillPaint);
-    //
-    // Draw the green border on top
-    context.canvas.drawCircle(markerPosition, containerRadius, borderPaint);
 
-    const double tolerance = 1; // pixels
-    if ((thumbCenter.dx - midX).abs() < tolerance) {
-      context.canvas.drawCircle(markerPosition, containerRadius, fillPaint);
-      context.canvas.drawCircle(markerPosition, containerRadius, borderPaint);
+    if ((_value - _markerLabelPosition!).abs() < tolerance) {
+      _sliderTheme.markerShape!.paint(
+        context,
+        offset,
+        parentBox: this,
+        sliderTheme: _sliderTheme,
+        enableAnimation: _enableAnimation,
+        textDirection: _textDirection,
+        thumbCenter: thumbCenter,
+        secondaryOffset: secondaryOffset,
+        isDiscrete: isDiscrete,
+        isEnabled: isInteractive,
+      );
     }
   }
 

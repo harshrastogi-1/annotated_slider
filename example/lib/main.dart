@@ -1,4 +1,5 @@
 import 'package:annotated_slider/annotated_slider.dart';
+import 'package:annotated_slider/annotated_slider_theme.dart';
 import 'package:flutter/material.dart';
 
 void main() {
@@ -50,29 +51,39 @@ class _MyHomePageState extends State<MyHomePage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            SliderTheme(
-              data: SliderTheme.of(context).copyWith(
-                trackHeight: 8.0,
-                trackShape: const RoundedRectSliderTrackShape(),
+            AnnotatedSliderTheme(
+              data: AnnotatedSliderTheme.of(context).copyWith(
+                trackHeight: 10.0,
+                activeTrackColor: Color(0xFF017AFF),
+                activeTickMarkColor: Color(0xFF017AFF),
+                valueIndicatorColor: Color(0xFF017AFF),
+                trackShape: const AnnotatedRoundedRectSliderTrackShape(),
                 thumbShape: DoubleArrowThumbShape(),
                 showValueIndicator: ShowValueIndicator.onlyForDiscrete,
-                overlayShape: const RoundSliderOverlayShape(
+                overlayShape: const AnnotatedRoundSliderOverlayShape(
                   overlayRadius: 24.0,
                 ),
-                tickMarkShape: const RoundSliderTickMarkShape(),
-                valueIndicatorShape: const PaddleSliderValueIndicatorShape(),
+                markerShape: DOTShape(.7),
+                tickMarkShape: const AnnotatedRoundSliderTickMarkShape(),
+                valueIndicatorShape:
+                    const AnnotatedPaddleSliderValueIndicatorShape(),
                 valueIndicatorTextStyle: TextStyle(
                   fontSize: 20.0,
-                  color: Colors.red,
+                  color: Colors.white,
+                ),
+                markerLabelTextStyle: TextStyle(
+                  fontSize: 12.0,
+                  color: Colors.black,
                 ),
               ),
               child: AnnotatedSlider(
                 min: 0.0,
                 max: 1000.0,
-                label: "Harsh ",
-                markerLabel: "Harsh",
+                label: _value.toString(),
+                markerLabel: "Ideal cover",
                 value: _value,
-                markerLabelPosition: 1.5,
+                divisions: 100,
+                markerLabelPosition: .75,
                 onChangeEnd: (value) {},
                 onChanged: (double value) {
                   setState(() {
@@ -98,7 +109,7 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 }
 
-class DoubleArrowThumbShape extends SliderComponentShape {
+class DoubleArrowThumbShape extends AnnotatedSliderComponentShape {
   @override
   Size getPreferredSize(bool isEnabled, bool isDiscrete) {
     return const Size(20, 16);
@@ -113,7 +124,7 @@ class DoubleArrowThumbShape extends SliderComponentShape {
     bool? isDiscrete,
     TextPainter? labelPainter,
     RenderBox? parentBox,
-    SliderThemeData? sliderTheme,
+    AnnotatedSliderThemeData? sliderTheme,
     TextDirection? textDirection,
     double? value,
     double? textScaleFactor,
@@ -139,6 +150,70 @@ class DoubleArrowThumbShape extends SliderComponentShape {
           ..lineTo(center.dx + 2 + triangleWidth, center.dy)
           ..close();
 
-    canvas.drawCircle(center, radius, Paint()..color = Colors.black);
+    canvas.drawCircle(center, radius, Paint()..color = Color(0xFF017AFF));
+  }
+}
+
+class DOTShape extends AnnotatedSliderMarkerShape {
+  final double value; // 0.0 to 1.0 normalized
+
+  const DOTShape(this.value);
+
+  static const double containerRadius = 6.0;
+
+  @override
+  double get markerValue => value;
+
+  @override
+  Rect getPreferredRect({
+    required RenderBox parentBox,
+    Offset offset = Offset.zero,
+    required AnnotatedSliderThemeData sliderTheme,
+    bool? isEnabled,
+    bool? isDiscrete,
+  }) {
+    final double trackWidth = parentBox.size.width;
+    final double markerX = offset.dx + trackWidth * value;
+    final double markerY = offset.dy;
+
+    return Rect.fromCircle(
+      center: Offset(markerX, markerY - 20), // move it 20px above track
+      radius: containerRadius,
+    );
+  }
+
+  @override
+  void paint(
+    PaintingContext context,
+    Offset offset, {
+    required RenderBox parentBox,
+    required AnnotatedSliderThemeData sliderTheme,
+    required Animation<double> enableAnimation,
+    required Offset thumbCenter,
+    Offset? secondaryOffset,
+    required bool isEnabled,
+    required bool isDiscrete,
+    required TextDirection textDirection,
+  }) {
+    final Canvas canvas = context.canvas;
+    final double trackWidth = parentBox.size.width;
+    final double markerX = offset.dx + trackWidth * value;
+    final double markerY = thumbCenter.dy;
+
+    final Offset markerPosition = Offset(markerX, markerY);
+
+    final Paint fillPaint =
+        Paint()
+          ..color = Colors.white
+          ..style = PaintingStyle.fill;
+
+    final Paint borderPaint =
+        Paint()
+          ..color = Colors.green
+          ..style = PaintingStyle.stroke
+          ..strokeWidth = 4.0;
+
+    canvas.drawCircle(markerPosition, containerRadius, fillPaint);
+    canvas.drawCircle(markerPosition, containerRadius, borderPaint);
   }
 }

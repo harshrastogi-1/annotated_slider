@@ -78,6 +78,7 @@ class AnnotatedSliderThemeData with Diagnosticable {
     this.thumbSize,
     this.trackGap,
     this.markerLabelTextStyle,
+    this.markerShape,
     @Deprecated(
       'Use SliderTheme to customize the Slider appearance. '
       'This feature was deprecated after v3.27.0-0.2.pre.',
@@ -117,7 +118,6 @@ class AnnotatedSliderThemeData with Diagnosticable {
     const int disabledThumbAlpha = 0x52; // 32% opacity
     const int overlayAlpha = 0x1f; // 12% opacity
     const int valueIndicatorAlpha = 0xff;
-    const int marketLabelAlpha = 0xff;
 
     return AnnotatedSliderThemeData(
       trackHeight: 2.0,
@@ -430,6 +430,8 @@ class AnnotatedSliderThemeData with Diagnosticable {
   /// Defaults to 6.0 pixels of gap between the active and inactive tracks.
   final double? trackGap;
 
+  final AnnotatedSliderMarkerShape? markerShape;
+
   /// Overrides the default value of [Slider.year2023].
   ///
   /// When true, the [Slider] will use the 2023 Material Design 3 appearance.
@@ -474,6 +476,7 @@ class AnnotatedSliderThemeData with Diagnosticable {
     AnnotatedRangeSliderThumbShape? rangeThumbShape,
     AnnotatedRangeSliderTrackShape? rangeTrackShape,
     AnnotatedRangeSliderValueIndicatorShape? rangeValueIndicatorShape,
+    AnnotatedSliderMarkerShape? markerShape,
     ShowValueIndicator? showValueIndicator,
     TextStyle? valueIndicatorTextStyle,
     TextStyle? markerLabelTextStyle,
@@ -527,6 +530,7 @@ class AnnotatedSliderThemeData with Diagnosticable {
       showValueIndicator: showValueIndicator ?? this.showValueIndicator,
       valueIndicatorTextStyle:
           valueIndicatorTextStyle ?? this.valueIndicatorTextStyle,
+      markerShape: markerShape ?? this.markerShape,
       markerLabelTextStyle: markerLabelTextStyle ?? this.markerLabelTextStyle,
       minThumbSeparation: minThumbSeparation ?? this.minThumbSeparation,
       thumbSelector: thumbSelector ?? this.thumbSelector,
@@ -1253,6 +1257,38 @@ abstract class AnnotatedSliderTrackShape {
   /// Whether the track shape is rounded.
   ///
   /// This is used to determine the correct position of the thumb in relation to the track.
+  bool get isRounded => false;
+}
+
+abstract class AnnotatedSliderMarkerShape {
+  const AnnotatedSliderMarkerShape();
+
+  /// If your shape is based on value positioning (0.0 to 1.0),
+  /// override this to return a custom value.
+  /// Default: -1 (invalid).
+  double get markerValue => -1;
+
+  Rect getPreferredRect({
+    required RenderBox parentBox,
+    Offset offset = Offset.zero,
+    required AnnotatedSliderThemeData sliderTheme,
+    bool isEnabled,
+    bool isDiscrete,
+  });
+
+  void paint(
+    PaintingContext context,
+    Offset offset, {
+    required RenderBox parentBox,
+    required AnnotatedSliderThemeData sliderTheme,
+    required Animation<double> enableAnimation,
+    required Offset thumbCenter,
+    Offset? secondaryOffset,
+    required bool isEnabled,
+    required bool isDiscrete,
+    required TextDirection textDirection,
+  });
+
   bool get isRounded => false;
 }
 
