@@ -99,6 +99,7 @@ class AnnotatedSliderThemeData with Diagnosticable {
     required Color primaryColorDark,
     required Color primaryColorLight,
     required TextStyle valueIndicatorTextStyle,
+    required TextStyle markerLabelTextStyle,
   }) {
     // These are Material Design defaults, and are used to derive
     // component Colors (with opacity) from base colors.
@@ -116,6 +117,7 @@ class AnnotatedSliderThemeData with Diagnosticable {
     const int disabledThumbAlpha = 0x52; // 32% opacity
     const int overlayAlpha = 0x1f; // 12% opacity
     const int valueIndicatorAlpha = 0xff;
+    const int marketLabelAlpha = 0xff;
 
     return AnnotatedSliderThemeData(
       trackHeight: 2.0,
@@ -147,16 +149,18 @@ class AnnotatedSliderThemeData with Diagnosticable {
       overlayColor: primaryColor.withAlpha(overlayAlpha),
       valueIndicatorColor: primaryColor.withAlpha(valueIndicatorAlpha),
       valueIndicatorStrokeColor: primaryColor.withAlpha(valueIndicatorAlpha),
-      overlayShape: const RoundSliderOverlayShape(),
-      tickMarkShape: const RoundSliderTickMarkShape(),
-      thumbShape: const RoundSliderThumbShape(),
-      trackShape: const RoundedRectSliderTrackShape(),
-      valueIndicatorShape: const PaddleSliderValueIndicatorShape(),
-      rangeTickMarkShape: const RoundRangeSliderTickMarkShape(),
-      rangeThumbShape: const RoundRangeSliderThumbShape(),
-      rangeTrackShape: const RoundedRectRangeSliderTrackShape(),
-      rangeValueIndicatorShape: const PaddleRangeSliderValueIndicatorShape(),
+      overlayShape: const AnnotatedRoundSliderOverlayShape(),
+      tickMarkShape: const AnnotatedRoundSliderTickMarkShape(),
+      thumbShape: const AnnotatedRoundSliderThumbShape(),
+      trackShape: const AnnotatedRoundedRectSliderTrackShape(),
+      valueIndicatorShape: const AnnotatedPaddleSliderValueIndicatorShape(),
+      rangeTickMarkShape: const AnnotatedRoundRangeSliderTickMarkShape(),
+      rangeThumbShape: const AnnotatedRoundRangeSliderThumbShape(),
+      rangeTrackShape: const AnnotatedRoundedRectRangeSliderTrackShape(),
+      rangeValueIndicatorShape:
+          const AnnotatedPaddleRangeSliderValueIndicatorShape(),
       valueIndicatorTextStyle: valueIndicatorTextStyle,
+      markerLabelTextStyle: markerLabelTextStyle,
       showValueIndicator: ShowValueIndicator.onlyForDiscrete,
     );
   }
@@ -241,7 +245,7 @@ class AnnotatedSliderThemeData with Diagnosticable {
   /// The default [overlayShape] refers to the [overlayColor].
   ///
   /// The default value is [RoundSliderOverlayShape].
-  final SliderComponentShape? overlayShape;
+  final AnnotatedSliderComponentShape? overlayShape;
 
   /// The shape that will be used to draw the [Slider]'s tick marks.
   ///
@@ -255,7 +259,7 @@ class AnnotatedSliderThemeData with Diagnosticable {
   ///
   ///  * [RoundRangeSliderTickMarkShape], which is the default tick mark
   ///    shape for the range slider.
-  final SliderTickMarkShape? tickMarkShape;
+  final AnnotatedSliderTickMarkShape? tickMarkShape;
 
   /// The shape that will be used to draw the [Slider]'s thumb.
   ///
@@ -265,7 +269,7 @@ class AnnotatedSliderThemeData with Diagnosticable {
   ///
   ///  * [RoundRangeSliderThumbShape], which is the default thumb shape for
   ///    the [RangeSlider].
-  final SliderComponentShape? thumbShape;
+  final AnnotatedSliderComponentShape? thumbShape;
 
   /// The shape that will be used to draw the [Slider]'s track.
   ///
@@ -280,7 +284,7 @@ class AnnotatedSliderThemeData with Diagnosticable {
   ///
   ///  * [RoundedRectRangeSliderTrackShape], which is the default track
   ///    shape for the [RangeSlider].
-  final SliderTrackShape? trackShape;
+  final AnnotatedSliderTrackShape? trackShape;
 
   /// The shape that will be used to draw the [Slider]'s value
   /// indicator.
@@ -291,7 +295,7 @@ class AnnotatedSliderThemeData with Diagnosticable {
   ///
   ///  * [PaddleRangeSliderValueIndicatorShape], which is the default value
   ///    indicator shape for the [RangeSlider].
-  final SliderComponentShape? valueIndicatorShape;
+  final AnnotatedSliderComponentShape? valueIndicatorShape;
 
   /// The shape that will be used to draw the [RangeSlider]'s tick marks.
   ///
@@ -305,7 +309,7 @@ class AnnotatedSliderThemeData with Diagnosticable {
   ///
   ///  * [RoundSliderTickMarkShape], which is the default tick mark shape
   ///    for the [Slider].
-  final RangeSliderTickMarkShape? rangeTickMarkShape;
+  final AnnotatedRangeSliderTickMarkShape? rangeTickMarkShape;
 
   /// The shape that will be used for the [RangeSlider]'s thumbs.
   ///
@@ -319,7 +323,7 @@ class AnnotatedSliderThemeData with Diagnosticable {
   ///
   ///  * [RoundSliderThumbShape], which is the default thumb shape for the
   ///    [Slider].
-  final RangeSliderThumbShape? rangeThumbShape;
+  final AnnotatedRangeSliderThumbShape? rangeThumbShape;
 
   /// The shape that will be used to draw the [RangeSlider]'s track.
   ///
@@ -334,7 +338,7 @@ class AnnotatedSliderThemeData with Diagnosticable {
   ///
   ///  * [RoundedRectSliderTrackShape], which is the default track
   ///    shape for the [Slider].
-  final RangeSliderTrackShape? rangeTrackShape;
+  final AnnotatedRangeSliderTrackShape? rangeTrackShape;
 
   /// The shape that will be used for the [RangeSlider]'s value indicators.
   ///
@@ -349,7 +353,7 @@ class AnnotatedSliderThemeData with Diagnosticable {
   ///
   ///  * [PaddleSliderValueIndicatorShape], which is the default value
   ///    indicator shape for the [Slider].
-  final RangeSliderValueIndicatorShape? rangeValueIndicatorShape;
+  final AnnotatedRangeSliderValueIndicatorShape? rangeValueIndicatorShape;
 
   /// Whether the value indicator should be shown for different types of
   /// sliders.
@@ -461,17 +465,18 @@ class AnnotatedSliderThemeData with Diagnosticable {
     Color? overlayColor,
     Color? valueIndicatorColor,
     Color? valueIndicatorStrokeColor,
-    SliderComponentShape? overlayShape,
-    SliderTickMarkShape? tickMarkShape,
-    SliderComponentShape? thumbShape,
-    SliderTrackShape? trackShape,
-    SliderComponentShape? valueIndicatorShape,
-    RangeSliderTickMarkShape? rangeTickMarkShape,
-    RangeSliderThumbShape? rangeThumbShape,
-    RangeSliderTrackShape? rangeTrackShape,
-    RangeSliderValueIndicatorShape? rangeValueIndicatorShape,
+    AnnotatedSliderComponentShape? overlayShape,
+    AnnotatedSliderTickMarkShape? tickMarkShape,
+    AnnotatedSliderComponentShape? thumbShape,
+    AnnotatedSliderTrackShape? trackShape,
+    AnnotatedSliderComponentShape? valueIndicatorShape,
+    AnnotatedRangeSliderTickMarkShape? rangeTickMarkShape,
+    AnnotatedRangeSliderThumbShape? rangeThumbShape,
+    AnnotatedRangeSliderTrackShape? rangeTrackShape,
+    AnnotatedRangeSliderValueIndicatorShape? rangeValueIndicatorShape,
     ShowValueIndicator? showValueIndicator,
     TextStyle? valueIndicatorTextStyle,
+    TextStyle? markerLabelTextStyle,
     double? minThumbSeparation,
     RangeThumbSelector? thumbSelector,
     MaterialStateProperty<MouseCursor?>? mouseCursor,
@@ -522,6 +527,7 @@ class AnnotatedSliderThemeData with Diagnosticable {
       showValueIndicator: showValueIndicator ?? this.showValueIndicator,
       valueIndicatorTextStyle:
           valueIndicatorTextStyle ?? this.valueIndicatorTextStyle,
+      markerLabelTextStyle: markerLabelTextStyle ?? this.markerLabelTextStyle,
       minThumbSeparation: minThumbSeparation ?? this.minThumbSeparation,
       thumbSelector: thumbSelector ?? this.thumbSelector,
       mouseCursor: mouseCursor ?? this.mouseCursor,
@@ -631,6 +637,11 @@ class AnnotatedSliderThemeData with Diagnosticable {
         b.valueIndicatorTextStyle,
         t,
       ),
+      markerLabelTextStyle: TextStyle.lerp(
+        a.markerLabelTextStyle,
+        b.markerLabelTextStyle,
+        t,
+      ),
       minThumbSeparation: lerpDouble(
         a.minThumbSeparation,
         b.minThumbSeparation,
@@ -681,6 +692,7 @@ class AnnotatedSliderThemeData with Diagnosticable {
       rangeValueIndicatorShape,
       showValueIndicator,
       valueIndicatorTextStyle,
+      markerLabelTextStyle,
       minThumbSeparation,
       thumbSelector,
       mouseCursor,
@@ -700,7 +712,7 @@ class AnnotatedSliderThemeData with Diagnosticable {
     if (other.runtimeType != runtimeType) {
       return false;
     }
-    return other is SliderThemeData &&
+    return other is AnnotatedSliderThemeData &&
         other.trackHeight == trackHeight &&
         other.activeTrackColor == activeTrackColor &&
         other.inactiveTrackColor == inactiveTrackColor &&
@@ -737,13 +749,14 @@ class AnnotatedSliderThemeData with Diagnosticable {
         other.padding == padding &&
         other.thumbSize == thumbSize &&
         other.trackGap == trackGap &&
-        other.year2023 == year2023;
+        other.year2023 == year2023 &&
+        other.markerLabelTextStyle == markerLabelTextStyle;
   }
 
   @override
   void debugFillProperties(DiagnosticPropertiesBuilder properties) {
     super.debugFillProperties(properties);
-    const SliderThemeData defaultData = SliderThemeData();
+    const AnnotatedSliderThemeData defaultData = AnnotatedSliderThemeData();
     properties.add(
       DoubleProperty(
         'trackHeight',
@@ -864,63 +877,63 @@ class AnnotatedSliderThemeData with Diagnosticable {
       ),
     );
     properties.add(
-      DiagnosticsProperty<SliderComponentShape>(
+      DiagnosticsProperty<AnnotatedSliderComponentShape>(
         'overlayShape',
         overlayShape,
         defaultValue: defaultData.overlayShape,
       ),
     );
     properties.add(
-      DiagnosticsProperty<SliderTickMarkShape>(
+      DiagnosticsProperty<AnnotatedSliderTickMarkShape>(
         'tickMarkShape',
         tickMarkShape,
         defaultValue: defaultData.tickMarkShape,
       ),
     );
     properties.add(
-      DiagnosticsProperty<SliderComponentShape>(
+      DiagnosticsProperty<AnnotatedSliderComponentShape>(
         'thumbShape',
         thumbShape,
         defaultValue: defaultData.thumbShape,
       ),
     );
     properties.add(
-      DiagnosticsProperty<SliderTrackShape>(
+      DiagnosticsProperty<AnnotatedSliderTrackShape>(
         'trackShape',
         trackShape,
         defaultValue: defaultData.trackShape,
       ),
     );
     properties.add(
-      DiagnosticsProperty<SliderComponentShape>(
+      DiagnosticsProperty<AnnotatedSliderComponentShape>(
         'valueIndicatorShape',
         valueIndicatorShape,
         defaultValue: defaultData.valueIndicatorShape,
       ),
     );
     properties.add(
-      DiagnosticsProperty<RangeSliderTickMarkShape>(
+      DiagnosticsProperty<AnnotatedRangeSliderTickMarkShape>(
         'rangeTickMarkShape',
         rangeTickMarkShape,
         defaultValue: defaultData.rangeTickMarkShape,
       ),
     );
     properties.add(
-      DiagnosticsProperty<RangeSliderThumbShape>(
+      DiagnosticsProperty<AnnotatedRangeSliderThumbShape>(
         'rangeThumbShape',
         rangeThumbShape,
         defaultValue: defaultData.rangeThumbShape,
       ),
     );
     properties.add(
-      DiagnosticsProperty<RangeSliderTrackShape>(
+      DiagnosticsProperty<AnnotatedRangeSliderTrackShape>(
         'rangeTrackShape',
         rangeTrackShape,
         defaultValue: defaultData.rangeTrackShape,
       ),
     );
     properties.add(
-      DiagnosticsProperty<RangeSliderValueIndicatorShape>(
+      DiagnosticsProperty<AnnotatedRangeSliderValueIndicatorShape>(
         'rangeValueIndicatorShape',
         rangeValueIndicatorShape,
         defaultValue: defaultData.rangeValueIndicatorShape,
@@ -938,6 +951,13 @@ class AnnotatedSliderThemeData with Diagnosticable {
         'valueIndicatorTextStyle',
         valueIndicatorTextStyle,
         defaultValue: defaultData.valueIndicatorTextStyle,
+      ),
+    );
+    properties.add(
+      DiagnosticsProperty<TextStyle>(
+        'markerLabelTextStyle',
+        markerLabelTextStyle,
+        defaultValue: defaultData.markerLabelTextStyle,
       ),
     );
     properties.add(
@@ -1016,78 +1036,11 @@ class AnnotatedSliderThemeData with Diagnosticable {
 ///    [RangeSlider]'s overlay shape that paints a transparent circle.
 ///  * [PaddleSliderValueIndicatorShape], which is the default [Slider]'s value
 ///    indicator shape that paints a custom path with text in it.
-abstract class SliderComponentShape {
-  /// This abstract const constructor enables subclasses to provide
-  /// const constructors so that they can be used in const expressions.
-  const SliderComponentShape();
+abstract class AnnotatedSliderComponentShape {
+  const AnnotatedSliderComponentShape();
 
-  /// Returns the preferred size of the shape, based on the given conditions.
   Size getPreferredSize(bool isEnabled, bool isDiscrete);
 
-  /// Paints the shape, taking into account the state passed to it.
-  ///
-  /// {@template flutter.material.SliderComponentShape.paint.context}
-  /// The `context` argument is the same as the one that includes the [Slider]'s
-  /// render box.
-  /// {@endtemplate}
-  ///
-  /// {@template flutter.material.SliderComponentShape.paint.center}
-  /// The `center` argument is the offset for where this shape's center should be
-  /// painted. This offset is relative to the origin of the [context] canvas.
-  /// {@endtemplate}
-  ///
-  /// The `activationAnimation` argument is an animation triggered when the user
-  /// begins to interact with the slider. It reverses when the user stops interacting
-  /// with the slider.
-  ///
-  /// {@template flutter.material.SliderComponentShape.paint.enableAnimation}
-  /// The `enableAnimation` argument is an animation triggered when the [Slider]
-  /// is enabled, and it reverses when the slider is disabled. The [Slider] is
-  /// enabled when [Slider.onChanged] is not null.Use this to paint intermediate
-  /// frames for this shape when the slider changes enabled state.
-  /// {@endtemplate}
-  ///
-  /// {@template flutter.material.SliderComponentShape.paint.isDiscrete}
-  /// The `isDiscrete` argument is true if [Slider.divisions] is non-null. When
-  /// true, the slider will render tick marks on top of the track.
-  /// {@endtemplate}
-  ///
-  /// If the `labelPainter` argument is non-null, then [TextPainter.paint]
-  /// should be called on the `labelPainter` with the location that the label
-  /// should appear. If the `labelPainter` argument is null, then no label was
-  /// supplied to the [Slider].
-  ///
-  /// {@template flutter.material.SliderComponentShape.paint.parentBox}
-  /// The `parentBox` argument is the [RenderBox] of the [Slider]. Its attributes,
-  /// such as size, can be used to assist in painting this shape.
-  /// {@endtemplate}
-  ///
-  /// {@template flutter.material.SliderComponentShape.paint.sliderTheme}
-  /// the `sliderTheme` argument is the theme assigned to the [Slider] that this
-  /// shape belongs to.
-  /// {@endtemplate}
-  ///
-  /// The `textDirection` argument can be used to determine how any extra text
-  /// or graphics (besides the text painted by the `labelPainter`) should be
-  /// positioned. The `labelPainter` already has the [textDirection] set.
-  ///
-  /// The `value` argument is the current parametric value (from 0.0 to 1.0) of
-  /// the slider.
-  ///
-  /// {@template flutter.material.SliderComponentShape.paint.textScaleFactor}
-  /// The `textScaleFactor` argument can be used to determine whether the
-  /// component should paint larger or smaller, depending on whether
-  /// [textScaleFactor] is greater than 1 for larger, and between 0 and 1 for
-  /// smaller. It's usually computed from [MediaQueryData.textScaler].
-  /// {@endtemplate}
-  ///
-  /// {@template flutter.material.SliderComponentShape.paint.sizeWithOverflow}
-  /// The `sizeWithOverflow` argument can be used to determine the bounds the
-  /// drawing of the components that are outside of the regular slider bounds.
-  /// It's the size of the box, whose center is aligned with the slider's
-  /// bounds, that the value indicators must be drawn within. Typically, it is
-  /// bigger than the slider.
-  /// {@endtemplate}
   void paint(
     PaintingContext context,
     Offset center, {
@@ -1096,7 +1049,7 @@ abstract class SliderComponentShape {
     required bool isDiscrete,
     required TextPainter labelPainter,
     required RenderBox parentBox,
-    required SliderThemeData sliderTheme,
+    required AnnotatedSliderThemeData sliderTheme,
     required TextDirection textDirection,
     required double value,
     required double textScaleFactor,
@@ -1109,7 +1062,8 @@ abstract class SliderComponentShape {
   ///
   ///  * [SliderThemeData.thumbShape], which is the shape that the [Slider]
   ///    uses when painting the thumb.
-  static final SliderComponentShape noThumb = _EmptySliderComponentShape();
+  static final AnnotatedSliderComponentShape noThumb =
+      _AnnotatedEmptySliderComponentShape();
 
   /// Special instance of [SliderComponentShape] to skip the overlay drawing.
   ///
@@ -1117,7 +1071,8 @@ abstract class SliderComponentShape {
   ///
   ///  * [SliderThemeData.overlayShape], which is the shape that the [Slider]
   ///    uses when painting the overlay.
-  static final SliderComponentShape noOverlay = _EmptySliderComponentShape();
+  static final AnnotatedSliderComponentShape noOverlay =
+      _AnnotatedEmptySliderComponentShape();
 }
 
 /// Base class for [Slider] tick mark shapes.
@@ -1136,10 +1091,10 @@ abstract class SliderComponentShape {
 ///  * [SliderComponentShape], which can be used to create custom shapes for
 ///    the [Slider]'s thumb, overlay, and value indicator and the
 ///    [RangeSlider]'s overlay.
-abstract class SliderTickMarkShape {
+abstract class AnnotatedSliderTickMarkShape {
   /// This abstract const constructor enables subclasses to provide
   /// const constructors so that they can be used in const expressions.
-  const SliderTickMarkShape();
+  const AnnotatedSliderTickMarkShape();
 
   /// Returns the preferred size of the shape.
   ///
@@ -1152,7 +1107,7 @@ abstract class SliderTickMarkShape {
   /// otherwise. When true, the slider will respond to input.
   /// {@endtemplate}
   Size getPreferredSize({
-    required SliderThemeData sliderTheme,
+    required AnnotatedSliderThemeData sliderTheme,
     required bool isEnabled,
   });
 
@@ -1181,7 +1136,7 @@ abstract class SliderTickMarkShape {
     PaintingContext context,
     Offset center, {
     required RenderBox parentBox,
-    required SliderThemeData sliderTheme,
+    required AnnotatedSliderThemeData sliderTheme,
     required Animation<double> enableAnimation,
     required Offset thumbCenter,
     required bool isEnabled,
@@ -1194,7 +1149,8 @@ abstract class SliderTickMarkShape {
   ///
   ///  * [SliderThemeData.tickMarkShape], which is the shape that the [Slider]
   ///    uses when painting tick marks.
-  static final SliderTickMarkShape noTickMark = _EmptySliderTickMarkShape();
+  static final AnnotatedSliderTickMarkShape noTickMark =
+      _AnnotatedEmptySliderTickMarkShape();
 }
 
 /// Base class for slider track shapes.
@@ -1215,10 +1171,10 @@ abstract class SliderTickMarkShape {
 ///  * [SliderComponentShape], which can be used to create custom shapes for
 ///    the [Slider]'s thumb, overlay, and value indicator and the
 ///    [RangeSlider]'s overlay.
-abstract class SliderTrackShape {
+abstract class AnnotatedSliderTrackShape {
   /// This abstract const constructor enables subclasses to provide
   /// const constructors so that they can be used in const expressions.
-  const SliderTrackShape();
+  const AnnotatedSliderTrackShape();
 
   /// Returns the preferred bounds of the shape.
   ///
@@ -1239,7 +1195,7 @@ abstract class SliderTrackShape {
   Rect getPreferredRect({
     required RenderBox parentBox,
     Offset offset = Offset.zero,
-    required SliderThemeData sliderTheme,
+    required AnnotatedSliderThemeData sliderTheme,
     bool isEnabled,
     bool isDiscrete,
   });
@@ -1285,7 +1241,7 @@ abstract class SliderTrackShape {
     PaintingContext context,
     Offset offset, {
     required RenderBox parentBox,
-    required SliderThemeData sliderTheme,
+    required AnnotatedSliderThemeData sliderTheme,
     required Animation<double> enableAnimation,
     required Offset thumbCenter,
     Offset? secondaryOffset,
@@ -1300,25 +1256,10 @@ abstract class SliderTrackShape {
   bool get isRounded => false;
 }
 
-/// Base class for [RangeSlider] thumb shapes.
-///
-/// See also:
-///
-///  * [RoundRangeSliderThumbShape] for the default [RangeSlider]'s thumb shape
-///    that paints a solid circle.
-///  * [RangeSliderTickMarkShape], which can be used to create custom shapes for
-///    the [RangeSlider]'s tick marks.
-///  * [RangeSliderTrackShape], which can be used to create custom shapes for
-///    the [RangeSlider]'s track.
-///  * [RangeSliderValueIndicatorShape], which can be used to create custom
-///    shapes for the [RangeSlider]'s value indicator.
-///  * [SliderComponentShape], which can be used to create custom shapes for
-///    the [Slider]'s thumb, overlay, and value indicator and the
-///    [RangeSlider]'s overlay.
-abstract class RangeSliderThumbShape {
+abstract class AnnotatedRangeSliderThumbShape {
   /// This abstract const constructor enables subclasses to provide
   /// const constructors so that they can be used in const expressions.
-  const RangeSliderThumbShape();
+  const AnnotatedRangeSliderThumbShape();
 
   /// Returns the preferred size of the shape, based on the given conditions.
   ///
@@ -1395,25 +1336,10 @@ abstract class RangeSliderThumbShape {
   });
 }
 
-/// Base class for [RangeSlider] value indicator shapes.
-///
-/// See also:
-///
-///  * [PaddleRangeSliderValueIndicatorShape] for the default [RangeSlider]'s
-///    value indicator shape that paints a custom path with text in it.
-///  * [RangeSliderTickMarkShape], which can be used to create custom shapes for
-///    the [RangeSlider]'s tick marks.
-///  * [RangeSliderThumbShape], which can be used to create custom shapes for
-///    the [RangeSlider]'s thumb.
-///  * [RangeSliderTrackShape], which can be used to create custom shapes for
-///    the [RangeSlider]'s track.
-///  * [SliderComponentShape], which can be used to create custom shapes for
-///    the [Slider]'s thumb, overlay, and value indicator and the
-///    [RangeSlider]'s overlay.
-abstract class RangeSliderValueIndicatorShape {
+abstract class AnnotatedRangeSliderValueIndicatorShape {
   /// This abstract const constructor enables subclasses to provide
   /// const constructors so that they can be used in const expressions.
-  const RangeSliderValueIndicatorShape();
+  const AnnotatedRangeSliderValueIndicatorShape();
 
   /// Returns the preferred size of the shape, based on the given conditions.
   ///
@@ -1502,66 +1428,17 @@ abstract class RangeSliderValueIndicatorShape {
   });
 }
 
-/// Base class for [RangeSlider] tick mark shapes.
-///
-/// This is a simplified version of [SliderComponentShape] with a
-/// [SliderThemeData] passed when getting the preferred size.
-///
-/// See also:
-///
-///  * [RoundRangeSliderTickMarkShape] for the default [RangeSlider]'s tick mark
-///    shape that paints a solid circle.
-///  * [RangeSliderThumbShape], which can be used to create custom shapes for
-///    the [RangeSlider]'s thumb.
-///  * [RangeSliderTrackShape], which can be used to create custom shapes for
-///    the [RangeSlider]'s track.
-///  * [RangeSliderValueIndicatorShape], which can be used to create custom
-///    shapes for the [RangeSlider]'s value indicator.
-///  * [SliderComponentShape], which can be used to create custom shapes for
-///    the [Slider]'s thumb, overlay, and value indicator and the
-///    [RangeSlider]'s overlay.
-abstract class RangeSliderTickMarkShape {
-  /// This abstract const constructor enables subclasses to provide
-  /// const constructors so that they can be used in const expressions.
-  const RangeSliderTickMarkShape();
-
-  /// Returns the preferred size of the shape.
-  ///
-  /// It is used to help position the tick marks within the slider.
-  ///
-  /// {@macro flutter.material.RangeSliderThumbShape.paint.sliderTheme}
-  ///
-  /// {@macro flutter.material.RangeSliderThumbShape.getPreferredSize.isEnabled}
-  Size getPreferredSize({required SliderThemeData sliderTheme, bool isEnabled});
-
-  /// Paints the slider track.
-  ///
-  /// {@macro flutter.material.RangeSliderThumbShape.paint.context}
-  ///
-  /// {@macro flutter.material.SliderComponentShape.paint.center}
-  ///
-  /// {@macro flutter.material.RangeSliderValueIndicatorShape.paint.parentBox}
-  ///
-  /// {@macro flutter.material.RangeSliderThumbShape.paint.sliderTheme}
-  ///
-  /// {@macro flutter.material.RangeSliderThumbShape.paint.enableAnimation}
-  ///
-  /// {@macro flutter.material.RangeSliderThumbShape.getPreferredSize.isEnabled}
-  ///
-  /// The `textDirection` argument can be used to determine how the tick marks
-  /// are painted depending on whether they are on an active track segment or not.
-  ///
-  /// {@template flutter.material.RangeSliderTickMarkShape.paint.trackSegment}
-  /// The track segment between the two thumbs is the active track segment. The
-  /// track segments between the thumb and each end of the slider are the inactive
-  /// track segments. In [TextDirection.ltr], the start of the slider is on the
-  /// left, and in [TextDirection.rtl], the start of the slider is on the right.
-  /// {@endtemplate}
+abstract class AnnotatedRangeSliderTickMarkShape {
+  const AnnotatedRangeSliderTickMarkShape();
+  Size getPreferredSize({
+    required AnnotatedSliderThemeData sliderTheme,
+    bool isEnabled,
+  });
   void paint(
     PaintingContext context,
     Offset center, {
     required RenderBox parentBox,
-    required SliderThemeData sliderTheme,
+    required AnnotatedSliderThemeData sliderTheme,
     required Animation<double> enableAnimation,
     required Offset startThumbCenter,
     required Offset endThumbCenter,
@@ -1570,96 +1447,22 @@ abstract class RangeSliderTickMarkShape {
   });
 }
 
-/// Base class for [RangeSlider] track shapes.
-///
-/// The slider's thumbs move along the track. A discrete slider's tick marks
-/// are drawn after the track, but before the thumb, and are aligned with the
-/// track.
-///
-/// The [getPreferredRect] helps position the slider thumbs and tick marks
-/// relative to the track.
-///
-/// See also:
-///
-///  * [RoundedRectRangeSliderTrackShape] for the default [RangeSlider]'s track
-///    shape that paints a stadium-like track.
-///  * [RangeSliderTickMarkShape], which can be used to create custom shapes for
-///    the [RangeSlider]'s tick marks.
-///  * [RangeSliderThumbShape], which can be used to create custom shapes for
-///    the [RangeSlider]'s thumb.
-///  * [RangeSliderValueIndicatorShape], which can be used to create custom
-///    shapes for the [RangeSlider]'s value indicator.
-///  * [SliderComponentShape], which can be used to create custom shapes for
-///    the [Slider]'s thumb, overlay, and value indicator and the
-///    [RangeSlider]'s overlay.
-abstract class RangeSliderTrackShape {
-  /// This abstract const constructor enables subclasses to provide
-  /// const constructors so that they can be used in const expressions.
-  const RangeSliderTrackShape();
+abstract class AnnotatedRangeSliderTrackShape {
+  const AnnotatedRangeSliderTrackShape();
 
-  /// Returns the preferred bounds of the shape.
-  ///
-  /// It is used to provide horizontal boundaries for the position of the
-  /// thumbs, and to help position the slider thumbs and tick marks relative to
-  /// the track.
-  ///
-  /// The `parentBox` argument can be used to help determine the preferredRect
-  /// relative to attributes of the render box of the slider itself, such as
-  /// size.
-  ///
-  /// The `offset` argument is relative to the caller's bounding box. It can be
-  /// used to convert gesture coordinates from global to slider-relative
-  /// coordinates.
-  ///
-  /// {@macro flutter.material.RangeSliderThumbShape.paint.sliderTheme}
-  ///
-  /// {@macro flutter.material.RangeSliderThumbShape.getPreferredSize.isEnabled}
-  ///
-  /// {@macro flutter.material.RangeSliderThumbShape.getPreferredSize.isDiscrete}
   Rect getPreferredRect({
     required RenderBox parentBox,
     Offset offset = Offset.zero,
-    required SliderThemeData sliderTheme,
+    required AnnotatedSliderThemeData sliderTheme,
     bool isEnabled,
     bool isDiscrete,
   });
 
-  /// Paints the track shape based on the state passed to it.
-  ///
-  /// {@macro flutter.material.SliderComponentShape.paint.context}
-  ///
-  /// The `offset` argument is the offset of the origin of the `parentBox` to
-  /// the origin of its `context` canvas. This shape must be painted relative
-  /// to this offset. See [PaintingContextCallback].
-  ///
-  /// {@macro flutter.material.RangeSliderValueIndicatorShape.paint.parentBox}
-  ///
-  /// {@macro flutter.material.RangeSliderThumbShape.paint.sliderTheme}
-  ///
-  /// {@macro flutter.material.RangeSliderThumbShape.paint.enableAnimation}
-  ///
-  /// The `startThumbCenter` argument is the offset of the center of the start
-  /// thumb relative to the origin of the [PaintingContext.canvas]. It can be
-  /// used as one point that divides the track between inactive and active.
-  ///
-  /// The `endThumbCenter` argument is the offset of the center of the end
-  /// thumb relative to the origin of the [PaintingContext.canvas]. It can be
-  /// used as one point that divides the track between inactive and active.
-  ///
-  /// {@macro flutter.material.RangeSliderThumbShape.getPreferredSize.isEnabled}
-  ///
-  /// {@macro flutter.material.RangeSliderThumbShape.getPreferredSize.isDiscrete}
-  ///
-  /// The `textDirection` argument can be used to determine how the track
-  /// segments are painted depending on whether they are on an active track
-  /// segment or not.
-  ///
-  /// {@macro flutter.material.RangeSliderTickMarkShape.paint.trackSegment}
   void paint(
     PaintingContext context,
     Offset offset, {
     required RenderBox parentBox,
-    required SliderThemeData sliderTheme,
+    required AnnotatedSliderThemeData sliderTheme,
     required Animation<double> enableAnimation,
     required Offset startThumbCenter,
     required Offset endThumbCenter,
@@ -1668,38 +1471,14 @@ abstract class RangeSliderTrackShape {
     required TextDirection textDirection,
   });
 
-  /// Whether the track shape is rounded. This is used to determine the correct
-  /// position of the thumbs in relation to the track. Defaults to false.
   bool get isRounded => false;
 }
 
-/// Base track shape that provides an implementation of [getPreferredRect] for
-/// default sizing.
-///
-/// The height is set from [SliderThemeData.trackHeight] and the width of the
-/// parent box less the larger of the widths of [SliderThemeData.thumbShape] and
-/// [SliderThemeData.overlayShape].
-///
-/// See also:
-///
-///  * [RectangularSliderTrackShape], which is a track shape with sharp
-///    rectangular edges
-///  * [RoundedRectSliderTrackShape], which is a track shape with round
-///    stadium-like edges.
-mixin BaseSliderTrackShape {
-  /// Returns a rect that represents the track bounds that fits within the
-  /// [Slider].
-  ///
-  /// The width is the width of the [Slider] or [RangeSlider], but padded by
-  /// the max of the overlay and thumb radius. The height is defined by the
-  /// [SliderThemeData.trackHeight].
-  ///
-  /// The [Rect] is centered both horizontally and vertically within the slider
-  /// bounds.
+mixin AnnotatedBaseSliderTrackShape {
   Rect getPreferredRect({
     required RenderBox parentBox,
     Offset offset = Offset.zero,
-    required SliderThemeData sliderTheme,
+    required AnnotatedSliderThemeData sliderTheme,
     bool isEnabled = false,
     bool isDiscrete = false,
   }) {
@@ -1732,47 +1511,19 @@ mixin BaseSliderTrackShape {
     );
   }
 
-  /// Whether the track shape is rounded. This is used to determine the correct
-  /// position of the thumb in relation to the track. Defaults to false.
   bool get isRounded => false;
 }
 
-/// A [Slider] track that's a simple rectangle.
-///
-/// It paints a solid colored rectangle, vertically centered in the
-/// `parentBox`. The track rectangle extends to the bounds of the `parentBox`,
-/// but is padded by the [RoundSliderOverlayShape] radius. The height is defined
-/// by the [SliderThemeData.trackHeight]. The color is determined by the
-/// [Slider]'s enabled state and the track segment's active state which are
-/// defined by:
-///   [SliderThemeData.activeTrackColor],
-///   [SliderThemeData.inactiveTrackColor],
-///   [SliderThemeData.disabledActiveTrackColor],
-///   [SliderThemeData.disabledInactiveTrackColor].
-///
-/// {@macro flutter.material.SliderTrackShape.paint.trackSegment}
-///
-/// ![A slider widget, consisting of 5 divisions and showing the rectangular slider track shape.](https://flutter.github.io/assets-for-api-docs/assets/material/rectangular_slider_track_shape.png)
-///
-/// See also:
-///
-///  * [Slider], for the component that is meant to display this shape.
-///  * [SliderThemeData], where an instance of this class is set to inform the
-///    slider of the visual details of the its track.
-///  * [SliderTrackShape], which can be used to create custom shapes for the
-///    [Slider]'s track.
-///  * [RoundedRectSliderTrackShape], for a similar track with rounded edges.
-class RectangularSliderTrackShape extends SliderTrackShape
-    with BaseSliderTrackShape {
-  /// Creates a slider track that draws 2 rectangles.
-  const RectangularSliderTrackShape();
+class AnnotatedRectangularSliderTrackShape extends AnnotatedSliderTrackShape
+    with AnnotatedBaseSliderTrackShape {
+  const AnnotatedRectangularSliderTrackShape();
 
   @override
   void paint(
     PaintingContext context,
     Offset offset, {
     required RenderBox parentBox,
-    required SliderThemeData sliderTheme,
+    required AnnotatedSliderThemeData sliderTheme,
     required Animation<double> enableAnimation,
     required TextDirection textDirection,
     required Offset thumbCenter,
@@ -1785,15 +1536,10 @@ class RectangularSliderTrackShape extends SliderTrackShape
     assert(sliderTheme.activeTrackColor != null);
     assert(sliderTheme.inactiveTrackColor != null);
     assert(sliderTheme.thumbShape != null);
-    // If the slider [SliderThemeData.trackHeight] is less than or equal to 0,
-    // then it makes no difference whether the track is painted or not,
-    // therefore the painting can be a no-op.
     if (sliderTheme.trackHeight! <= 0) {
       return;
     }
 
-    // Assign the track segment paints, which are left: active, right: inactive,
-    // but reversed for right to left text.
     final ColorTween activeTrackColorTween = ColorTween(
       begin: sliderTheme.disabledActiveTrackColor,
       end: sliderTheme.activeTrackColor,
@@ -1876,42 +1622,16 @@ class RectangularSliderTrackShape extends SliderTrackShape
   }
 }
 
-/// The default shape of a [Slider]'s track.
-///
-/// It paints a solid colored rectangle with rounded edges, vertically centered
-/// in the `parentBox`. The track rectangle extends to the bounds of the
-/// `parentBox`, but is padded by the larger of [RoundSliderOverlayShape]'s
-/// radius and [RoundSliderThumbShape]'s radius. The height is defined by the
-/// [SliderThemeData.trackHeight]. The color is determined by the [Slider]'s
-/// enabled state and the track segment's active state which are defined by:
-///   [SliderThemeData.activeTrackColor],
-///   [SliderThemeData.inactiveTrackColor],
-///   [SliderThemeData.disabledActiveTrackColor],
-///   [SliderThemeData.disabledInactiveTrackColor].
-///
-/// {@macro flutter.material.SliderTrackShape.paint.trackSegment}
-///
-/// ![A slider widget, consisting of 5 divisions and showing the rounded rect slider track shape.](https://flutter.github.io/assets-for-api-docs/assets/material/rounded_rect_slider_track_shape.png)
-///
-/// See also:
-///
-///  * [Slider], for the component that is meant to display this shape.
-///  * [SliderThemeData], where an instance of this class is set to inform the
-///    slider of the visual details of the its track.
-///  * [SliderTrackShape], which can be used to create custom shapes for the
-///    [Slider]'s track.
-///  * [RectangularSliderTrackShape], for a similar track with sharp edges.
-class RoundedRectSliderTrackShape extends SliderTrackShape
-    with BaseSliderTrackShape {
-  /// Create a slider track that draws two rectangles with rounded outer edges.
-  const RoundedRectSliderTrackShape();
+class AnnotatedRoundedRectSliderTrackShape extends AnnotatedSliderTrackShape
+    with AnnotatedBaseSliderTrackShape {
+  const AnnotatedRoundedRectSliderTrackShape();
 
   @override
   void paint(
     PaintingContext context,
     Offset offset, {
     required RenderBox parentBox,
-    required SliderThemeData sliderTheme,
+    required AnnotatedSliderThemeData sliderTheme,
     required Animation<double> enableAnimation,
     required TextDirection textDirection,
     required Offset thumbCenter,
@@ -1925,15 +1645,10 @@ class RoundedRectSliderTrackShape extends SliderTrackShape
     assert(sliderTheme.activeTrackColor != null);
     assert(sliderTheme.inactiveTrackColor != null);
     assert(sliderTheme.thumbShape != null);
-    // If the slider [SliderThemeData.trackHeight] is less than or equal to 0,
-    // then it makes no difference whether the track is painted or not,
-    // therefore the painting can be a no-op.
     if (sliderTheme.trackHeight == null || sliderTheme.trackHeight! <= 0) {
       return;
     }
 
-    // Assign the track segment paints, which are leading: active and
-    // trailing: inactive.
     final ColorTween activeTrackColorTween = ColorTween(
       begin: sliderTheme.disabledActiveTrackColor,
       end: sliderTheme.activeTrackColor,
@@ -2063,7 +1778,7 @@ class RoundedRectSliderTrackShape extends SliderTrackShape
 ///
 ///  * [RectangularRangeSliderTrackShape], which is a track shape with sharp
 ///    rectangular edges
-mixin BaseRangeSliderTrackShape {
+mixin AnnotatedBaseRangeSliderTrackShape {
   /// Returns a rect that represents the track bounds that fits within the
   /// [Slider].
   ///
@@ -2075,7 +1790,7 @@ mixin BaseRangeSliderTrackShape {
   Rect getPreferredRect({
     required RenderBox parentBox,
     Offset offset = Offset.zero,
-    required SliderThemeData sliderTheme,
+    required AnnotatedSliderThemeData sliderTheme,
     bool isEnabled = false,
     bool isDiscrete = false,
   }) {
@@ -2135,20 +1850,21 @@ mixin BaseRangeSliderTrackShape {
 ///    the [RangeSlider]'s track.
 ///  * [RoundedRectRangeSliderTrackShape], for a similar track with rounded
 ///    edges.
-class RectangularRangeSliderTrackShape extends RangeSliderTrackShape
-    with BaseRangeSliderTrackShape {
+class AnnotatedRectangularRangeSliderTrackShape
+    extends AnnotatedRangeSliderTrackShape
+    with AnnotatedBaseRangeSliderTrackShape {
   /// Create a slider track with rectangular outer edges.
   ///
   /// The middle track segment is the selected range and is active, and the two
   /// outer track segments are inactive.
-  const RectangularRangeSliderTrackShape();
+  const AnnotatedRectangularRangeSliderTrackShape();
 
   @override
   void paint(
     PaintingContext context,
     Offset offset, {
     required RenderBox parentBox,
-    required SliderThemeData sliderTheme,
+    required AnnotatedSliderThemeData sliderTheme,
     required Animation<double>? enableAnimation,
     required Offset startThumbCenter,
     required Offset endThumbCenter,
@@ -2248,20 +1964,21 @@ class RectangularRangeSliderTrackShape extends RangeSliderTrackShape
 ///  * [RangeSliderTrackShape], which can be used to create custom shapes for
 ///    the [RangeSlider]'s track.
 ///  * [RectangularRangeSliderTrackShape], for a similar track with sharp edges.
-class RoundedRectRangeSliderTrackShape extends RangeSliderTrackShape
-    with BaseRangeSliderTrackShape {
+class AnnotatedRoundedRectRangeSliderTrackShape
+    extends AnnotatedRangeSliderTrackShape
+    with AnnotatedBaseRangeSliderTrackShape {
   /// Create a slider track with rounded outer edges.
   ///
   /// The middle track segment is the selected range and is active, and the two
   /// outer track segments are inactive.
-  const RoundedRectRangeSliderTrackShape();
+  const AnnotatedRoundedRectRangeSliderTrackShape();
 
   @override
   void paint(
     PaintingContext context,
     Offset offset, {
     required RenderBox parentBox,
-    required SliderThemeData sliderTheme,
+    required AnnotatedSliderThemeData sliderTheme,
     required Animation<double> enableAnimation,
     required Offset startThumbCenter,
     required Offset endThumbCenter,
@@ -2377,9 +2094,9 @@ class RoundedRectRangeSliderTrackShape extends RangeSliderTrackShape
 ///  * [Slider], which includes tick marks defined by this shape.
 ///  * [SliderTheme], which can be used to configure the tick mark shape of all
 ///    sliders in a widget subtree.
-class RoundSliderTickMarkShape extends SliderTickMarkShape {
+class AnnotatedRoundSliderTickMarkShape extends AnnotatedSliderTickMarkShape {
   /// Create a slider tick mark that draws a circle.
-  const RoundSliderTickMarkShape({this.tickMarkRadius});
+  const AnnotatedRoundSliderTickMarkShape({this.tickMarkRadius});
 
   /// The preferred radius of the round tick mark.
   ///
@@ -2388,7 +2105,7 @@ class RoundSliderTickMarkShape extends SliderTickMarkShape {
 
   @override
   Size getPreferredSize({
-    required SliderThemeData sliderTheme,
+    required AnnotatedSliderThemeData sliderTheme,
     required bool isEnabled,
   }) {
     assert(sliderTheme.trackHeight != null);
@@ -2403,7 +2120,7 @@ class RoundSliderTickMarkShape extends SliderTickMarkShape {
     PaintingContext context,
     Offset center, {
     required RenderBox parentBox,
-    required SliderThemeData sliderTheme,
+    required AnnotatedSliderThemeData sliderTheme,
     required Animation<double> enableAnimation,
     required TextDirection textDirection,
     required Offset thumbCenter,
@@ -2465,9 +2182,10 @@ class RoundSliderTickMarkShape extends SliderTickMarkShape {
 ///  * [RangeSlider], which includes tick marks defined by this shape.
 ///  * [SliderTheme], which can be used to configure the tick mark shape of all
 ///    sliders in a widget subtree.
-class RoundRangeSliderTickMarkShape extends RangeSliderTickMarkShape {
+class AnnotatedRoundRangeSliderTickMarkShape
+    extends AnnotatedRangeSliderTickMarkShape {
   /// Create a range slider tick mark that draws a circle.
-  const RoundRangeSliderTickMarkShape({this.tickMarkRadius});
+  const AnnotatedRoundRangeSliderTickMarkShape({this.tickMarkRadius});
 
   /// The preferred radius of the round tick mark.
   ///
@@ -2476,7 +2194,7 @@ class RoundRangeSliderTickMarkShape extends RangeSliderTickMarkShape {
 
   @override
   Size getPreferredSize({
-    required SliderThemeData sliderTheme,
+    required AnnotatedSliderThemeData sliderTheme,
     bool isEnabled = false,
   }) {
     assert(sliderTheme.trackHeight != null);
@@ -2488,7 +2206,7 @@ class RoundRangeSliderTickMarkShape extends RangeSliderTickMarkShape {
     PaintingContext context,
     Offset center, {
     required RenderBox parentBox,
-    required SliderThemeData sliderTheme,
+    required AnnotatedSliderThemeData sliderTheme,
     required Animation<double> enableAnimation,
     required Offset startThumbCenter,
     required Offset endThumbCenter,
@@ -2536,10 +2254,10 @@ class RoundRangeSliderTickMarkShape extends RangeSliderTickMarkShape {
 /// that will not paint any tick mark shape. A static reference is stored in
 /// [SliderTickMarkShape.noTickMark]. When this value is specified for
 /// [SliderThemeData.tickMarkShape], the tick mark painting is skipped.
-class _EmptySliderTickMarkShape extends SliderTickMarkShape {
+class _AnnotatedEmptySliderTickMarkShape extends AnnotatedSliderTickMarkShape {
   @override
   Size getPreferredSize({
-    required SliderThemeData sliderTheme,
+    required AnnotatedSliderThemeData sliderTheme,
     required bool isEnabled,
   }) {
     return Size.zero;
@@ -2550,7 +2268,7 @@ class _EmptySliderTickMarkShape extends SliderTickMarkShape {
     PaintingContext context,
     Offset center, {
     required RenderBox parentBox,
-    required SliderThemeData sliderTheme,
+    required AnnotatedSliderThemeData sliderTheme,
     required Animation<double> enableAnimation,
     required Offset thumbCenter,
     required bool isEnabled,
@@ -2569,7 +2287,8 @@ class _EmptySliderTickMarkShape extends SliderTickMarkShape {
 /// is specified for [SliderThemeData.thumbShape], the thumb painting is
 /// skipped. When this value is specified for [SliderThemeData.overlayShape],
 /// the overlay painting is skipped.
-class _EmptySliderComponentShape extends SliderComponentShape {
+class _AnnotatedEmptySliderComponentShape
+    extends AnnotatedSliderComponentShape {
   @override
   Size getPreferredSize(bool isEnabled, bool isDiscrete) => Size.zero;
 
@@ -2582,7 +2301,7 @@ class _EmptySliderComponentShape extends SliderComponentShape {
     required bool isDiscrete,
     required TextPainter labelPainter,
     required RenderBox parentBox,
-    required SliderThemeData sliderTheme,
+    required AnnotatedSliderThemeData sliderTheme,
     required TextDirection textDirection,
     required double value,
     required double textScaleFactor,
@@ -2603,9 +2322,9 @@ class _EmptySliderComponentShape extends SliderComponentShape {
 ///  * [Slider], which includes a thumb defined by this shape.
 ///  * [SliderTheme], which can be used to configure the thumb shape of all
 ///    sliders in a widget subtree.
-class RoundSliderThumbShape extends SliderComponentShape {
+class AnnotatedRoundSliderThumbShape extends AnnotatedSliderComponentShape {
   /// Create a slider thumb that draws a circle.
-  const RoundSliderThumbShape({
+  const AnnotatedRoundSliderThumbShape({
     this.enabledThumbRadius = 10.0,
     this.disabledThumbRadius,
     this.elevation = 1.0,
@@ -2657,7 +2376,7 @@ class RoundSliderThumbShape extends SliderComponentShape {
     required bool isDiscrete,
     required TextPainter labelPainter,
     required RenderBox parentBox,
-    required SliderThemeData sliderTheme,
+    required AnnotatedSliderThemeData sliderTheme,
     required TextDirection textDirection,
     required double value,
     required double textScaleFactor,
@@ -2726,9 +2445,10 @@ class RoundSliderThumbShape extends SliderComponentShape {
 ///  * [RangeSlider], which includes thumbs defined by this shape.
 ///  * [SliderTheme], which can be used to configure the thumb shapes of all
 ///    range sliders in a widget subtree.
-class RoundRangeSliderThumbShape extends RangeSliderThumbShape {
+class AnnotatedRoundRangeSliderThumbShape
+    extends AnnotatedRangeSliderThumbShape {
   /// Create a slider thumb that draws a circle.
-  const RoundRangeSliderThumbShape({
+  const AnnotatedRoundRangeSliderThumbShape({
     this.enabledThumbRadius = 10.0,
     this.disabledThumbRadius,
     this.elevation = 1.0,
@@ -2853,9 +2573,9 @@ class RoundRangeSliderThumbShape extends RangeSliderThumbShape {
 ///  * [Slider], which includes an overlay defined by this shape.
 ///  * [SliderTheme], which can be used to configure the overlay shape of all
 ///    sliders in a widget subtree.
-class RoundSliderOverlayShape extends SliderComponentShape {
+class AnnotatedRoundSliderOverlayShape extends AnnotatedSliderComponentShape {
   /// Create a slider thumb overlay that draws a circle.
-  const RoundSliderOverlayShape({this.overlayRadius = 24.0});
+  const AnnotatedRoundSliderOverlayShape({this.overlayRadius = 24.0});
 
   /// The preferred radius of the round thumb shape when enabled.
   ///
@@ -2877,7 +2597,7 @@ class RoundSliderOverlayShape extends SliderComponentShape {
     required bool isDiscrete,
     required TextPainter labelPainter,
     required RenderBox parentBox,
-    required SliderThemeData sliderTheme,
+    required AnnotatedSliderThemeData sliderTheme,
     required TextDirection textDirection,
     required double value,
     required double textScaleFactor,
@@ -2906,9 +2626,10 @@ class RoundSliderOverlayShape extends SliderComponentShape {
 ///  * [Slider], which includes a value indicator defined by this shape.
 ///  * [SliderTheme], which can be used to configure the slider value indicator
 ///    of all sliders in a widget subtree.
-class RectangularSliderValueIndicatorShape extends SliderComponentShape {
+class AnnotatedRectangularSliderValueIndicatorShape
+    extends AnnotatedSliderComponentShape {
   /// Create a slider value indicator that resembles a rectangular tooltip.
-  const RectangularSliderValueIndicatorShape();
+  const AnnotatedRectangularSliderValueIndicatorShape();
 
   static const _RectangularSliderValueIndicatorPathPainter _pathPainter =
       _RectangularSliderValueIndicatorPathPainter();
@@ -2934,7 +2655,7 @@ class RectangularSliderValueIndicatorShape extends SliderComponentShape {
     required bool isDiscrete,
     required TextPainter labelPainter,
     required RenderBox parentBox,
-    required SliderThemeData sliderTheme,
+    required AnnotatedSliderThemeData sliderTheme,
     required TextDirection textDirection,
     required double value,
     required double textScaleFactor,
@@ -3203,12 +2924,13 @@ class _RectangularSliderValueIndicatorPathPainter {
 ///  * [Slider], which includes a value indicator defined by this shape.
 ///  * [SliderTheme], which can be used to configure the slider value indicator
 ///    of all sliders in a widget subtree.
-class PaddleSliderValueIndicatorShape extends SliderComponentShape {
+class AnnotatedPaddleSliderValueIndicatorShape
+    extends AnnotatedSliderComponentShape {
   /// Create a slider value indicator in the shape of an upside-down pear.
-  const PaddleSliderValueIndicatorShape();
+  const AnnotatedPaddleSliderValueIndicatorShape();
 
-  static const _PaddleSliderValueIndicatorPathPainter _pathPainter =
-      _PaddleSliderValueIndicatorPathPainter();
+  static const _AnnotatedPaddleSliderValueIndicatorPathPainter _pathPainter =
+      _AnnotatedPaddleSliderValueIndicatorPathPainter();
 
   @override
   Size getPreferredSize(
@@ -3231,7 +2953,7 @@ class PaddleSliderValueIndicatorShape extends SliderComponentShape {
     required bool isDiscrete,
     required TextPainter labelPainter,
     required RenderBox parentBox,
-    required SliderThemeData sliderTheme,
+    required AnnotatedSliderThemeData sliderTheme,
     required TextDirection textDirection,
     required double value,
     required double textScaleFactor,
@@ -3265,13 +2987,13 @@ class PaddleSliderValueIndicatorShape extends SliderComponentShape {
 ///  * [RangeSlider], which includes value indicators defined by this shape.
 ///  * [SliderTheme], which can be used to configure the range slider value
 ///    indicator of all sliders in a widget subtree.
-class PaddleRangeSliderValueIndicatorShape
-    extends RangeSliderValueIndicatorShape {
+class AnnotatedPaddleRangeSliderValueIndicatorShape
+    extends AnnotatedRangeSliderValueIndicatorShape {
   /// Create a slider value indicator in the shape of an upside-down pear.
-  const PaddleRangeSliderValueIndicatorShape();
+  const AnnotatedPaddleRangeSliderValueIndicatorShape();
 
-  static const _PaddleSliderValueIndicatorPathPainter _pathPainter =
-      _PaddleSliderValueIndicatorPathPainter();
+  static const _AnnotatedPaddleSliderValueIndicatorPathPainter _pathPainter =
+      _AnnotatedPaddleSliderValueIndicatorPathPainter();
 
   @override
   Size getPreferredSize(
@@ -3340,8 +3062,8 @@ class PaddleRangeSliderValueIndicatorShape
   }
 }
 
-class _PaddleSliderValueIndicatorPathPainter {
-  const _PaddleSliderValueIndicatorPathPainter();
+class _AnnotatedPaddleSliderValueIndicatorPathPainter {
+  const _AnnotatedPaddleSliderValueIndicatorPathPainter();
 
   // These constants define the shape of the default value indicator.
   // The value indicator changes shape based on the size of
@@ -3673,7 +3395,6 @@ class _PaddleSliderValueIndicatorPathPainter {
 ///
 ///  * [Slider.semanticFormatterCallback], which shows an example use case.
 ///  * [RangeSlider.semanticFormatterCallback], which shows an example use case.
-typedef SemanticFormatterCallback = String Function(double value);
 
 /// Decides which thumbs (if any) should be selected.
 ///
@@ -3789,12 +3510,13 @@ void _debugDrawShadow(Canvas canvas, Path path, double elevation) {
 ///  * [Slider], which includes a value indicator defined by this shape.
 ///  * [SliderTheme], which can be used to configure the slider value indicator
 ///    of all sliders in a widget subtree.
-class DropSliderValueIndicatorShape extends SliderComponentShape {
+class AnnotatedDropSliderValueIndicatorShape
+    extends AnnotatedSliderComponentShape {
   /// Create a slider value indicator that resembles a drop shape.
-  const DropSliderValueIndicatorShape();
+  const AnnotatedDropSliderValueIndicatorShape();
 
-  static const _DropSliderValueIndicatorPathPainter _pathPainter =
-      _DropSliderValueIndicatorPathPainter();
+  static const _AnnotatedDropSliderValueIndicatorPathPainter _pathPainter =
+      _AnnotatedDropSliderValueIndicatorPathPainter();
 
   @override
   Size getPreferredSize(
@@ -3817,7 +3539,7 @@ class DropSliderValueIndicatorShape extends SliderComponentShape {
     required bool isDiscrete,
     required TextPainter labelPainter,
     required RenderBox parentBox,
-    required SliderThemeData sliderTheme,
+    required AnnotatedSliderThemeData sliderTheme,
     required TextDirection textDirection,
     required double value,
     required double textScaleFactor,
@@ -3839,8 +3561,8 @@ class DropSliderValueIndicatorShape extends SliderComponentShape {
   }
 }
 
-class _DropSliderValueIndicatorPathPainter {
-  const _DropSliderValueIndicatorPathPainter();
+class _AnnotatedDropSliderValueIndicatorPathPainter {
+  const _AnnotatedDropSliderValueIndicatorPathPainter();
 
   static const double _triangleHeight = 10.0;
   static const double _labelPadding = 8.0;
@@ -4008,9 +3730,9 @@ class _DropSliderValueIndicatorPathPainter {
 ///  * [Slider], which includes an overlay defined by this shape.
 ///  * [SliderTheme], which can be used to configure the overlay shape of all
 ///    sliders in a widget subtree.
-class HandleThumbShape extends SliderComponentShape {
+class AnnotatedHandleThumbShape extends AnnotatedSliderComponentShape {
   /// Create a slider thumb that draws a bar.
-  const HandleThumbShape();
+  const AnnotatedHandleThumbShape();
 
   @override
   Size getPreferredSize(bool isEnabled, bool isDiscrete) {
@@ -4026,7 +3748,7 @@ class HandleThumbShape extends SliderComponentShape {
     required bool isDiscrete,
     required TextPainter labelPainter,
     required RenderBox parentBox,
-    required SliderThemeData sliderTheme,
+    required AnnotatedSliderThemeData sliderTheme,
     required TextDirection textDirection,
     required double value,
     required double textScaleFactor,
@@ -4083,17 +3805,17 @@ class HandleThumbShape extends SliderComponentShape {
 ///  * [Slider], which includes an overlay defined by this shape.
 ///  * [SliderTheme], which can be used to configure the overlay shape of all
 ///    sliders in a widget subtree.
-class GappedSliderTrackShape extends SliderTrackShape
-    with BaseSliderTrackShape {
+class AnnotatedGappedSliderTrackShape extends AnnotatedSliderTrackShape
+    with AnnotatedBaseSliderTrackShape {
   /// Create a slider track that draws two rectangles with rounded outer edges.
-  const GappedSliderTrackShape();
+  const AnnotatedGappedSliderTrackShape();
 
   @override
   void paint(
     PaintingContext context,
     Offset offset, {
     required RenderBox parentBox,
-    required SliderThemeData sliderTheme,
+    required AnnotatedSliderThemeData sliderTheme,
     required Animation<double> enableAnimation,
     required TextDirection textDirection,
     required Offset thumbCenter,
@@ -4299,12 +4021,13 @@ class GappedSliderTrackShape extends SliderTrackShape
 ///  * [Slider], which includes a value indicator defined by this shape.
 ///  * [SliderTheme], which can be used to configure the slider value indicator
 ///    of all sliders in a widget subtree.
-class RoundedRectSliderValueIndicatorShape extends SliderComponentShape {
+class AnnotatedRoundedRectSliderValueIndicatorShape
+    extends AnnotatedSliderComponentShape {
   /// Create a slider value indicator that resembles a rounded rectangle.
-  const RoundedRectSliderValueIndicatorShape();
+  const AnnotatedRoundedRectSliderValueIndicatorShape();
 
-  static const _RoundedRectSliderValueIndicatorPathPainter _pathPainter =
-      _RoundedRectSliderValueIndicatorPathPainter();
+  static const _AnnotatedRoundedRectSliderValueIndicatorPathPainter
+  _pathPainter = _AnnotatedRoundedRectSliderValueIndicatorPathPainter();
 
   @override
   Size getPreferredSize(
@@ -4327,7 +4050,7 @@ class RoundedRectSliderValueIndicatorShape extends SliderComponentShape {
     required bool isDiscrete,
     required TextPainter labelPainter,
     required RenderBox parentBox,
-    required SliderThemeData sliderTheme,
+    required AnnotatedSliderThemeData sliderTheme,
     required TextDirection textDirection,
     required double value,
     required double textScaleFactor,
@@ -4349,8 +4072,8 @@ class RoundedRectSliderValueIndicatorShape extends SliderComponentShape {
   }
 }
 
-class _RoundedRectSliderValueIndicatorPathPainter {
-  const _RoundedRectSliderValueIndicatorPathPainter();
+class _AnnotatedRoundedRectSliderValueIndicatorPathPainter {
+  const _AnnotatedRoundedRectSliderValueIndicatorPathPainter();
 
   static const double _labelPadding = 10.0;
   static const double _preferredHeight = 32.0;

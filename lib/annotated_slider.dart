@@ -9,6 +9,8 @@ import 'package:flutter/rendering.dart';
 import 'package:flutter/scheduler.dart' show timeDilation;
 import 'package:flutter/services.dart';
 
+import 'annotated_slider_theme.dart';
+
 typedef PaintValueIndicator =
     void Function(PaintingContext context, Offset offset);
 
@@ -38,6 +40,7 @@ class AnnotatedSlider extends StatefulWidget {
     this.allowedInteraction,
     this.markerLabel,
     this.markerLabelPosition,
+    this.markerShape,
   }) : _sliderType = _SliderType.material,
        assert(min <= max),
        assert(
@@ -73,6 +76,7 @@ class AnnotatedSlider extends StatefulWidget {
     this.allowedInteraction,
     this.markerLabel,
     this.markerLabelPosition,
+    this.markerShape,
   }) : _sliderType = _SliderType.adaptive,
        assert(min <= max),
        assert(
@@ -83,6 +87,10 @@ class AnnotatedSlider extends StatefulWidget {
          secondaryTrackValue == null ||
              (secondaryTrackValue >= min && secondaryTrackValue <= max),
          'SecondaryValue $secondaryTrackValue is not between $min and $max',
+       ),
+       assert(
+         markerLabelPosition == 0,
+         'Marker Label position cant be $markerLabelPosition',
        ),
        assert(divisions == null || divisions > 0);
   final double value;
@@ -107,6 +115,7 @@ class AnnotatedSlider extends StatefulWidget {
   final _SliderType _sliderType;
   final String? markerLabel;
   final double? markerLabelPosition;
+  final SliderComponentShape? markerShape;
   @override
   State<AnnotatedSlider> createState() => _AnnotatedSliderState();
   @override
@@ -350,17 +359,21 @@ class _AnnotatedSliderState extends State<AnnotatedSlider>
 
   Widget _buildMaterialSlider(BuildContext context) {
     final ThemeData theme = Theme.of(context);
-    SliderThemeData sliderTheme = SliderTheme.of(context);
-    final SliderThemeData defaults =
+    AnnotatedSliderThemeData sliderTheme = AnnotatedSliderTheme.of(context);
+    final AnnotatedSliderThemeData defaults =
         theme.useMaterial3
             ? _SliderDefaultsM3(context)
             : _SliderDefaultsM2(context);
 
-    const SliderTrackShape defaultTrackShape = RoundedRectSliderTrackShape();
-    const SliderTickMarkShape defaultTickMarkShape = RoundSliderTickMarkShape();
-    const SliderComponentShape defaultOverlayShape = RoundSliderOverlayShape();
-    const SliderComponentShape defaultThumbShape = RoundSliderThumbShape();
-    final SliderComponentShape defaultValueIndicatorShape =
+    const AnnotatedSliderTrackShape defaultTrackShape =
+        AnnotatedRoundedRectSliderTrackShape();
+    const AnnotatedSliderTickMarkShape defaultTickMarkShape =
+        AnnotatedRoundSliderTickMarkShape();
+    const AnnotatedSliderComponentShape defaultOverlayShape =
+        AnnotatedRoundSliderOverlayShape();
+    const AnnotatedSliderComponentShape defaultThumbShape =
+        AnnotatedRoundSliderThumbShape();
+    final AnnotatedSliderComponentShape defaultValueIndicatorShape =
         defaults.valueIndicatorShape!;
     const ShowValueIndicator defaultShowValueIndicator =
         ShowValueIndicator.onlyForDiscrete;
@@ -374,7 +387,7 @@ class _AnnotatedSliderState extends State<AnnotatedSlider>
       if (_dragging) MaterialState.dragged,
     };
 
-    final SliderComponentShape valueIndicatorShape =
+    final AnnotatedSliderComponentShape valueIndicatorShape =
         sliderTheme.valueIndicatorShape ?? defaultValueIndicatorShape;
     final Color valueIndicatorColor;
     if (valueIndicatorShape is RectangularSliderValueIndicatorShape) {
@@ -407,6 +420,8 @@ class _AnnotatedSliderState extends State<AnnotatedSlider>
     TextStyle valueIndicatorTextStyle =
         sliderTheme.valueIndicatorTextStyle ??
         defaults.valueIndicatorTextStyle!;
+    TextStyle markerLabelTextStyle =
+        sliderTheme.markerLabelTextStyle ?? defaults.valueIndicatorTextStyle!;
     if (MediaQuery.boldTextOf(context)) {
       valueIndicatorTextStyle = valueIndicatorTextStyle.merge(
         const TextStyle(fontWeight: FontWeight.bold),
@@ -467,6 +482,7 @@ class _AnnotatedSliderState extends State<AnnotatedSlider>
       showValueIndicator:
           sliderTheme.showValueIndicator ?? defaultShowValueIndicator,
       valueIndicatorTextStyle: valueIndicatorTextStyle,
+      markerLabelTextStyle: markerLabelTextStyle,
     );
     final MouseCursor effectiveMouseCursor =
         MaterialStateProperty.resolveAs<MouseCursor?>(
@@ -627,7 +643,7 @@ class _SliderRenderObjectWidget extends LeafRenderObjectWidget {
   final double? secondaryTrackValue;
   final int? divisions;
   final String? label;
-  final SliderThemeData sliderTheme;
+  final AnnotatedSliderThemeData sliderTheme;
   final double textScaleFactor;
   final Size screenSize;
   final ValueChanged<double>? onChanged;
@@ -699,7 +715,7 @@ class _RenderSlider extends RenderBox with RelayoutWhenSystemFontsChangeMixin {
     required double? secondaryTrackValue,
     required int? divisions,
     required String? label,
-    required SliderThemeData sliderTheme,
+    required AnnotatedSliderThemeData sliderTheme,
     required double textScaleFactor,
     required Size screenSize,
     required TargetPlatform platform,
@@ -900,6 +916,7 @@ class _RenderSlider extends RenderBox with RelayoutWhenSystemFontsChangeMixin {
   }
 
   String? get label => _label;
+  String? get markerLabel => _markerLabel;
   String? _label;
   set label(String? value) {
     if (value == _label) {
@@ -909,9 +926,9 @@ class _RenderSlider extends RenderBox with RelayoutWhenSystemFontsChangeMixin {
     _updateLabelPainter();
   }
 
-  SliderThemeData get sliderTheme => _sliderTheme;
-  SliderThemeData _sliderTheme;
-  set sliderTheme(SliderThemeData value) {
+  AnnotatedSliderThemeData get sliderTheme => _sliderTheme;
+  AnnotatedSliderThemeData _sliderTheme;
+  set sliderTheme(AnnotatedSliderThemeData value) {
     if (value == _sliderTheme) {
       return;
     }
@@ -1367,7 +1384,7 @@ class _RenderSlider extends RenderBox with RelayoutWhenSystemFontsChangeMixin {
     final double midY = trackRect.center.dy;
     const double padding = 15.0;
     // Center of your circle
-    final Offset center = offset + Offset(midX, midY);
+    final Offset markerPosition = offset + Offset(midX, midY);
 
     // Radius of the container (adjust as needed)
     const double containerRadius = 6.0;
@@ -1380,17 +1397,18 @@ class _RenderSlider extends RenderBox with RelayoutWhenSystemFontsChangeMixin {
     if (_markerLabel != null) {
       _markerLabelTextPainter
         ..text = TextSpan(
-          style: _sliderTheme.valueIndicatorTextStyle,
+          style: _sliderTheme.markerLabelTextStyle,
           text: _markerLabel,
         )
         ..textDirection = textDirection
         ..textScaleFactor = textScaleFactor
         ..layout();
-      final double textX = center.dx - (_markerLabelTextPainter.width / 100);
+      final double textX =
+          markerPosition.dx - (_markerLabelTextPainter.width / 100);
       final double textY =
-          center.dy -
+          markerPosition.dy -
           containerRadius -
-          padding -
+          trackRect.center.dy -
           _markerLabelTextPainter.height;
       final Offset textOffset = Offset(textX, textY);
       _markerLabelTextPainter.paint(context.canvas, textOffset);
@@ -1408,12 +1426,6 @@ class _RenderSlider extends RenderBox with RelayoutWhenSystemFontsChangeMixin {
           ..color = Colors.green
           ..style = PaintingStyle.stroke
           ..strokeWidth = 4.0;
-
-    // Draw the white circle
-    context.canvas.drawCircle(center, containerRadius, fillPaint);
-
-    // Draw the green border on top
-    context.canvas.drawCircle(center, containerRadius, borderPaint);
 
     if (!_overlayAnimation.isDismissed) {
       _sliderTheme.overlayShape!.paint(
@@ -1505,11 +1517,16 @@ class _RenderSlider extends RenderBox with RelayoutWhenSystemFontsChangeMixin {
       textScaleFactor: textScaleFactor,
       sizeWithOverflow: screenSize.isEmpty ? size : screenSize,
     );
+    // Draw the white circle
+    context.canvas.drawCircle(markerPosition, containerRadius, fillPaint);
+    //
+    // Draw the green border on top
+    context.canvas.drawCircle(markerPosition, containerRadius, borderPaint);
 
     const double tolerance = 1; // pixels
     if ((thumbCenter.dx - midX).abs() < tolerance) {
-      context.canvas.drawCircle(center, containerRadius, fillPaint);
-      context.canvas.drawCircle(center, containerRadius, borderPaint);
+      context.canvas.drawCircle(markerPosition, containerRadius, fillPaint);
+      context.canvas.drawCircle(markerPosition, containerRadius, borderPaint);
     }
   }
 
@@ -1667,7 +1684,7 @@ class _RenderValueIndicator extends RenderBox
   }
 }
 
-class _SliderDefaultsM2 extends SliderThemeData {
+class _SliderDefaultsM2 extends AnnotatedSliderThemeData {
   _SliderDefaultsM2(this.context)
     : _colors = Theme.of(context).colorScheme,
       super(trackHeight: 4.0);
@@ -1722,11 +1739,11 @@ class _SliderDefaultsM2 extends SliderThemeData {
       Theme.of(context).textTheme.bodyLarge!.copyWith(color: _colors.onPrimary);
 
   @override
-  SliderComponentShape? get valueIndicatorShape =>
-      const RectangularSliderValueIndicatorShape();
+  AnnotatedSliderComponentShape? get valueIndicatorShape =>
+      const AnnotatedRectangularSliderValueIndicatorShape();
 }
 
-class _SliderDefaultsM3 extends SliderThemeData {
+class _SliderDefaultsM3 extends AnnotatedSliderThemeData {
   _SliderDefaultsM3(this.context) : super(trackHeight: 4.0);
 
   final BuildContext context;
@@ -1794,6 +1811,94 @@ class _SliderDefaultsM3 extends SliderThemeData {
   ).textTheme.labelMedium!.copyWith(color: _colors.onPrimary);
 
   @override
-  SliderComponentShape? get valueIndicatorShape =>
-      const DropSliderValueIndicatorShape();
+  AnnotatedSliderComponentShape? get valueIndicatorShape =>
+      const AnnotatedDropSliderValueIndicatorShape();
+}
+
+abstract class AnnotationShape {
+  /// This abstract const constructor enables subclasses to provide
+  /// const constructors so that they can be used in const expressions.
+  const AnnotationShape();
+
+  /// Returns the preferred size of the shape, based on the given conditions.
+  Size getPreferredSize(bool isEnabled, bool isDiscrete);
+
+  /// Paints the shape, taking into account the state passed to it.
+  ///
+  /// {@template flutter.material.SliderComponentShape.paint.context}
+  /// The `context` argument is the same as the one that includes the [Slider]'s
+  /// render box.
+  /// {@endtemplate}
+  ///
+  /// {@template flutter.material.SliderComponentShape.paint.center}
+  /// The `center` argument is the offset for where this shape's center should be
+  /// painted. This offset is relative to the origin of the [context] canvas.
+  /// {@endtemplate}
+  ///
+  /// The `activationAnimation` argument is an animation triggered when the user
+  /// begins to interact with the slider. It reverses when the user stops interacting
+  /// with the slider.
+  ///
+  /// {@template flutter.material.SliderComponentShape.paint.enableAnimation}
+  /// The `enableAnimation` argument is an animation triggered when the [Slider]
+  /// is enabled, and it reverses when the slider is disabled. The [Slider] is
+  /// enabled when [Slider.onChanged] is not null.Use this to paint intermediate
+  /// frames for this shape when the slider changes enabled state.
+  /// {@endtemplate}
+  ///
+  /// {@template flutter.material.SliderComponentShape.paint.isDiscrete}
+  /// The `isDiscrete` argument is true if [Slider.divisions] is non-null. When
+  /// true, the slider will render tick marks on top of the track.
+  /// {@endtemplate}
+  ///
+  /// If the `labelPainter` argument is non-null, then [TextPainter.paint]
+  /// should be called on the `labelPainter` with the location that the label
+  /// should appear. If the `labelPainter` argument is null, then no label was
+  /// supplied to the [Slider].
+  ///
+  /// {@template flutter.material.SliderComponentShape.paint.parentBox}
+  /// The `parentBox` argument is the [RenderBox] of the [Slider]. Its attributes,
+  /// such as size, can be used to assist in painting this shape.
+  /// {@endtemplate}
+  ///
+  /// {@template flutter.material.SliderComponentShape.paint.sliderTheme}
+  /// the `sliderTheme` argument is the theme assigned to the [Slider] that this
+  /// shape belongs to.
+  /// {@endtemplate}
+  ///
+  /// The `textDirection` argument can be used to determine how any extra text
+  /// or graphics (besides the text painted by the `labelPainter`) should be
+  /// positioned. The `labelPainter` already has the [textDirection] set.
+  ///
+  /// The `value` argument is the current parametric value (from 0.0 to 1.0) of
+  /// the slider.
+  ///
+  /// {@template flutter.material.SliderComponentShape.paint.textScaleFactor}
+  /// The `textScaleFactor` argument can be used to determine whether the
+  /// component should paint larger or smaller, depending on whether
+  /// [textScaleFactor] is greater than 1 for larger, and between 0 and 1 for
+  /// smaller. It's usually computed from [MediaQueryData.textScaler].
+  /// {@endtemplate}
+  ///
+  /// {@template flutter.material.SliderComponentShape.paint.sizeWithOverflow}
+  /// The `sizeWithOverflow` argument can be used to determine the bounds the
+  /// drawing of the components that are outside of the regular slider bounds.
+  /// It's the size of the box, whose center is aligned with the slider's
+  /// bounds, that the value indicators must be drawn within. Typically, it is
+  /// bigger than the slider.
+  /// {@endtemplate}
+  void paint(
+    PaintingContext context,
+    Offset center, {
+    required Animation<double> activationAnimation,
+    required Animation<double> enableAnimation,
+    required bool isDiscrete,
+    required TextPainter labelPainter,
+    required RenderBox parentBox,
+    required SliderThemeData sliderTheme,
+    required TextDirection textDirection,
+    required double value,
+    required double textScaleFactor,
+    required Size sizeWithOverflow,
+  });
 }
