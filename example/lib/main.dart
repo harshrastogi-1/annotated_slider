@@ -51,7 +51,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 overlayShape: const AnnotatedRoundSliderOverlayShape(
                   overlayRadius: 24.0,
                 ),
-                markerShape: DOTShape([.3, .5, .7]),
+                markerShape: DOTShape([.2, .5, .8]),
                 tickMarkShape: const AnnotatedRoundSliderTickMarkShape(),
                 valueIndicatorShape:
                     const AnnotatedPaddleSliderValueIndicatorShape(),
@@ -68,10 +68,10 @@ class _MyHomePageState extends State<MyHomePage> {
                 min: 0.0,
                 max: 1000.0,
                 label: _value.toString(),
-                markerLabel: ["Ideal cover", "Harsh", "Check"],
+                markerLabel: ["Min", "Ideal", "Max"],
                 value: _value,
                 divisions: 100,
-                markerLabelPosition: [.3, .5, .7],
+                markerLabelPosition: [.2, .5, .8],
                 onChangeEnd: (value) {},
                 onChanged: (double value) {
                   setState(() {
@@ -92,7 +92,7 @@ class DOTShape extends AnnotatedSliderMarkerShape {
 
   DOTShape(this.value);
 
-  static const double containerRadius = 6.0;
+  static const double containerRadius = 10.0;
   final List<Rect> markerPainter = [];
 
   @override
@@ -168,18 +168,11 @@ class DOTShape extends AnnotatedSliderMarkerShape {
 
     final Paint fillPaint =
         Paint()
-          ..color = Colors.white38
-          ..style = PaintingStyle.fill;
-
-    final Paint borderPaint =
-        Paint()
           ..color = Colors.black
-          ..style = PaintingStyle.stroke
-          ..strokeWidth = 4.0;
+          ..style = PaintingStyle.fill;
 
     for (int i = 0; i < markerRect.length; i++) {
       canvas.drawCircle(markerRect[i].center, containerRadius, fillPaint);
-      canvas.drawCircle(markerRect[i].center, containerRadius, borderPaint);
     }
   }
 }
