@@ -1,39 +1,42 @@
-<!--
-This README describes the package. If you publish this package to pub.dev,
-this README's contents appear on the landing page for your package.
+# annotated_slider
 
-For information about how to write a good package README, see the guide for
-[writing package pages](https://dart.dev/tools/pub/writing-package-pages).
+A powerful and customizable Flutter slider widget that supports **annotations**, **marker labels**, **custom marker shapes**, and **tick marks** — ideal for building intuitive UI components where users need visual cues along a slider.
+![Screenshot 2025-07-25 at 11.10.01 PM.png](../../../../var/folders/7b/bbvs4bsd2ng1wxqdbx1595w40000gn/T/TemporaryItems/NSIRD_screencaptureui_GYrRmg/Screenshot%202025-07-25%20at%2011.10.01%E2%80%AFPM.png)
+![Screenshot 2025-07-25 at 11.12.03 PM.png](../../../../var/folders/7b/bbvs4bsd2ng1wxqdbx1595w40000gn/T/TemporaryItems/NSIRD_screencaptureui_HIjZQ7/Screenshot%202025-07-25%20at%2011.12.03%E2%80%AFPM.png)
+![Screenshot_20250725_231704.png](../../Downloads/Screenshot_20250725_231704.png)
 
-For general information about developing packages, see the Dart guide for
-[creating packages](https://dart.dev/guides/libraries/create-packages)
-and the Flutter guide for
-[developing packages and plugins](https://flutter.dev/to/develop-packages).
--->
 
-TODO: Put a short description of the package here that helps potential users
-know whether this package might be useful for them.
+[![Pub Version](https://img.shields.io/pub/v/annotated_slider)](https://pub.dev/packages/annotated_slider)
+[![License](https://img.shields.io/github/license/harshrastogi-1/annotated_slider)](LICENSE)
+[![Platform](https://img.shields.io/badge/platform-Flutter-blue)](https://flutter.dev)
 
-## Features
+---
 
-TODO: List what your package can do. Maybe include images, gifs, or videos.
+## 🚀 Why Use `annotated_slider`?
 
-## Getting started
+Flutter’s built-in slider is functional, but lacks customization for real-world UX needs like:
 
-TODO: List prerequisites and provide or point to information on how to
-start using the package.
+✅ Marking meaningful thresholds (e.g., "Low", "Optimal", "High")  
+✅ Positioning labeled markers on the track  
+✅ Custom drawing of marker shapes (circles, icons, etc.)  
+✅ Full control over theme, tick marks, overlay, and more
 
-## Usage
+---
 
-TODO: Include short and useful examples for package users. Add longer examples
-to `/example` folder.
+## ✨ Features
 
-```dart
-const like = 'sample';
-```
+- 🔢 Define **a list of marker labels** with **corresponding normalized positions**.
+- 🎯 Create **custom marker shapes** by extending `AnnotatedSliderMarkerShape`.
+- 🎨 Full theming support via `AnnotatedSliderTheme`.
+- 📏 Add tick marks and adjust track/overlay/indicator shapes.
+- 💡 Easy integration with existing forms, filters, and control panels.
 
-## Additional information
+---
 
-TODO: Tell users more about the package: where to find more information, how to
-contribute to the package, how to file issues, what response they can expect
-from the package authors, and more.
+## 📦 Installation
+
+Add to your `pubspec.yaml`:
+
+```yaml
+dependencies:
+  annotated_slider: ^0.0.1
