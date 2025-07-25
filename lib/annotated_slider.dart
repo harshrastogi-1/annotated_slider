@@ -1069,13 +1069,11 @@ class _RenderSlider extends RenderBox with RelayoutWhenSystemFontsChangeMixin {
     switch (_platform) {
       case TargetPlatform.iOS:
       case TargetPlatform.macOS:
-        // Matches iOS implementation of material slider.
         return 0.1;
       case TargetPlatform.android:
       case TargetPlatform.fuchsia:
       case TargetPlatform.linux:
       case TargetPlatform.windows:
-        // Matches Android implementation of material slider.
         return 0.05;
     }
   }
@@ -1093,9 +1091,6 @@ class _RenderSlider extends RenderBox with RelayoutWhenSystemFontsChangeMixin {
     } else {
       _labelPainter.text = null;
     }
-    // Changing the textDirection can result in the layout changing, because the
-    // bidi algorithm might line up the glyphs differently which can result in
-    // different ligatures, different shapes, etc. So we always markNeedsLayout.
     markNeedsLayout();
   }
 
@@ -1224,9 +1219,6 @@ class _RenderSlider extends RenderBox with RelayoutWhenSystemFontsChangeMixin {
     if (!_state.mounted) {
       return;
     }
-
-    // for slide only, there is no start interaction trigger, so _active
-    // will be false and needs to be made true.
     if (!_active && allowedInteraction == SliderInteraction.slideOnly) {
       _active = true;
       _currentDragValue = value;
@@ -1245,7 +1237,6 @@ class _RenderSlider extends RenderBox with RelayoutWhenSystemFontsChangeMixin {
           onChanged!(_discretize(_currentDragValue));
         }
       case SliderInteraction.tapOnly:
-        // cannot slide (drag) as its tapOnly.
         break;
     }
   }
@@ -1319,10 +1310,6 @@ class _RenderSlider extends RenderBox with RelayoutWhenSystemFontsChangeMixin {
   @override
   void paint(PaintingContext context, Offset offset) {
     final double controllerValue = _state.positionController.value;
-
-    // The visual position is the position of the thumb from 0 to 1 from left
-    // to right. In left to right, this is the same as the value, but it is
-    // reversed for right to left text.
     final (
       double visualPosition,
       double? secondaryVisualPosition,
@@ -1574,15 +1561,6 @@ class _RenderSlider extends RenderBox with RelayoutWhenSystemFontsChangeMixin {
   void describeSemanticsConfiguration(SemanticsConfiguration config) {
     super.describeSemanticsConfiguration(config);
 
-    // The Slider widget has its own Focus widget with semantics information,
-    // and we want that semantics node to collect the semantics information here
-    // so that it's all in the same node: otherwise Talkback sees that the node
-    // has focusable children, and it won't focus the Slider's Focus widget
-    // because it thinks the Focus widget's node doesn't have anything to say
-    // (which it doesn't, but this child does). Aggregating the semantic
-    // information into one node means that Talkback will recognize that it has
-    // something to say and focus it when it receives keyboard focus.
-    // (See https://github.com/flutter/flutter/issues/57038 for context).
     config.isSemanticBoundary = false;
 
     config.isEnabled = isInteractive;
@@ -1856,77 +1834,10 @@ class _SliderDefaultsM3 extends AnnotatedSliderThemeData {
 }
 
 abstract class AnnotationShape {
-  /// This abstract const constructor enables subclasses to provide
-  /// const constructors so that they can be used in const expressions.
   const AnnotationShape();
 
-  /// Returns the preferred size of the shape, based on the given conditions.
   Size getPreferredSize(bool isEnabled, bool isDiscrete);
 
-  /// Paints the shape, taking into account the state passed to it.
-  ///
-  /// {@template flutter.material.SliderComponentShape.paint.context}
-  /// The `context` argument is the same as the one that includes the [Slider]'s
-  /// render box.
-  /// {@endtemplate}
-  ///
-  /// {@template flutter.material.SliderComponentShape.paint.center}
-  /// The `center` argument is the offset for where this shape's center should be
-  /// painted. This offset is relative to the origin of the [context] canvas.
-  /// {@endtemplate}
-  ///
-  /// The `activationAnimation` argument is an animation triggered when the user
-  /// begins to interact with the slider. It reverses when the user stops interacting
-  /// with the slider.
-  ///
-  /// {@template flutter.material.SliderComponentShape.paint.enableAnimation}
-  /// The `enableAnimation` argument is an animation triggered when the [Slider]
-  /// is enabled, and it reverses when the slider is disabled. The [Slider] is
-  /// enabled when [Slider.onChanged] is not null.Use this to paint intermediate
-  /// frames for this shape when the slider changes enabled state.
-  /// {@endtemplate}
-  ///
-  /// {@template flutter.material.SliderComponentShape.paint.isDiscrete}
-  /// The `isDiscrete` argument is true if [Slider.divisions] is non-null. When
-  /// true, the slider will render tick marks on top of the track.
-  /// {@endtemplate}
-  ///
-  /// If the `labelPainter` argument is non-null, then [TextPainter.paint]
-  /// should be called on the `labelPainter` with the location that the label
-  /// should appear. If the `labelPainter` argument is null, then no label was
-  /// supplied to the [Slider].
-  ///
-  /// {@template flutter.material.SliderComponentShape.paint.parentBox}
-  /// The `parentBox` argument is the [RenderBox] of the [Slider]. Its attributes,
-  /// such as size, can be used to assist in painting this shape.
-  /// {@endtemplate}
-  ///
-  /// {@template flutter.material.SliderComponentShape.paint.sliderTheme}
-  /// the `sliderTheme` argument is the theme assigned to the [Slider] that this
-  /// shape belongs to.
-  /// {@endtemplate}
-  ///
-  /// The `textDirection` argument can be used to determine how any extra text
-  /// or graphics (besides the text painted by the `labelPainter`) should be
-  /// positioned. The `labelPainter` already has the [textDirection] set.
-  ///
-  /// The `value` argument is the current parametric value (from 0.0 to 1.0) of
-  /// the slider.
-  ///
-  /// {@template flutter.material.SliderComponentShape.paint.textScaleFactor}
-  /// The `textScaleFactor` argument can be used to determine whether the
-  /// component should paint larger or smaller, depending on whether
-  /// [textScaleFactor] is greater than 1 for larger, and between 0 and 1 for
-  /// smaller. It's usually computed from [MediaQueryData.textScaler].
-  /// {@endtemplate}
-  ///
-  /// {@template flutter.material.SliderComponentShape.paint.sizeWithOverflow}
-  /// The `sizeWithOverflow` argument can be used to determine the bounds the
-  /// drawing of the components that are outside of the regular slider bounds.
-  /// It's the size of the box, whose center is aligned with the slider's
-  /// bounds, that the value indicators must be drawn within. Typically, it is
-  /// bigger than the slider.
-  /// {@endtemplate}
   void paint(
     PaintingContext context,
     Offset center, {
