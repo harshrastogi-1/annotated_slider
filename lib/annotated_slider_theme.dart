@@ -1,10 +1,3 @@
-// Copyright 2014 The Flutter Authors. All rights reserved.
-// Use of this source code is governed by a BSD-style license that can be
-// found in the LICENSE file.
-
-/// @docImport 'color_scheme.dart';
-/// @docImport 'range_slider.dart';
-/// @docImport 'text_theme.dart';
 library;
 
 import 'dart:math' as math;

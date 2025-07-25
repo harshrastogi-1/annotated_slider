@@ -86,10 +86,6 @@ class AnnotatedSlider extends StatefulWidget {
              (secondaryTrackValue >= min && secondaryTrackValue <= max),
          'SecondaryValue $secondaryTrackValue is not between $min and $max',
        ),
-       assert(
-         markerLabelPosition == 0,
-         'Marker Label position cant be $markerLabelPosition',
-       ),
        assert(divisions == null || divisions > 0);
   final double value;
   final double? secondaryTrackValue;
