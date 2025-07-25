@@ -104,7 +104,7 @@ class AnnotatedSlider extends StatefulWidget {
   final Color? inactiveColor;
   final Color? secondaryActiveColor;
   final Color? thumbColor;
-  final MaterialStateProperty<Color?>? overlayColor;
+  final WidgetStateProperty<Color?>? overlayColor;
   final MouseCursor? mouseCursor;
   final SemanticFormatterCallback? semanticFormatterCallback;
   final FocusNode? focusNode;
@@ -377,11 +377,11 @@ class _AnnotatedSliderState extends State<AnnotatedSlider>
     const SliderInteraction defaultAllowedInteraction =
         SliderInteraction.tapAndSlide;
 
-    final Set<MaterialState> states = <MaterialState>{
-      if (!_enabled) MaterialState.disabled,
-      if (_hovering) MaterialState.hovered,
-      if (_focused) MaterialState.focused,
-      if (_dragging) MaterialState.dragged,
+    final Set<WidgetState> states = <WidgetState>{
+      if (!_enabled) WidgetState.disabled,
+      if (_hovering) WidgetState.hovered,
+      if (_focused) WidgetState.focused,
+      if (_dragging) WidgetState.dragged,
     };
 
     final AnnotatedSliderComponentShape valueIndicatorShape =
@@ -404,14 +404,11 @@ class _AnnotatedSliderState extends State<AnnotatedSlider>
     Color? effectiveOverlayColor() {
       return widget.overlayColor?.resolve(states) ??
           widget.activeColor?.withOpacity(0.12) ??
-          MaterialStateProperty.resolveAs<Color?>(
+          WidgetStateProperty.resolveAs<Color?>(
             sliderTheme.overlayColor,
             states,
           ) ??
-          MaterialStateProperty.resolveAs<Color?>(
-            defaults.overlayColor,
-            states,
-          );
+          WidgetStateProperty.resolveAs<Color?>(defaults.overlayColor, states);
     }
 
     TextStyle valueIndicatorTextStyle =
@@ -482,12 +479,12 @@ class _AnnotatedSliderState extends State<AnnotatedSlider>
       markerLabelTextStyle: markerLabelTextStyle,
     );
     final MouseCursor effectiveMouseCursor =
-        MaterialStateProperty.resolveAs<MouseCursor?>(
+        WidgetStateProperty.resolveAs<MouseCursor?>(
           widget.mouseCursor,
           states,
         ) ??
         sliderTheme.mouseCursor?.resolve(states) ??
-        MaterialStateMouseCursor.clickable.resolve(states);
+        WidgetStateMouseCursor.clickable.resolve(states);
     final SliderInteraction effectiveAllowedInteraction =
         widget.allowedInteraction ??
         sliderTheme.allowedInteraction ??
@@ -1809,14 +1806,14 @@ class _SliderDefaultsM3 extends AnnotatedSliderThemeData {
 
   @override
   Color? get overlayColor =>
-      MaterialStateColor.resolveWith((Set<MaterialState> states) {
-        if (states.contains(MaterialState.dragged)) {
+      WidgetStateColor.resolveWith((Set<WidgetState> states) {
+        if (states.contains(WidgetState.dragged)) {
           return _colors.primary.withOpacity(0.1);
         }
-        if (states.contains(MaterialState.hovered)) {
+        if (states.contains(WidgetState.hovered)) {
           return _colors.primary.withOpacity(0.08);
         }
-        if (states.contains(MaterialState.focused)) {
+        if (states.contains(WidgetState.focused)) {
           return _colors.primary.withOpacity(0.1);
         }
 

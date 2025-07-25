@@ -384,7 +384,7 @@ class AnnotatedSliderThemeData with Diagnosticable {
   /// {@macro flutter.material.slider.mouseCursor}
   ///
   /// If specified, overrides the default value of [Slider.mouseCursor].
-  final MaterialStateProperty<MouseCursor?>? mouseCursor;
+  final WidgetStateProperty<MouseCursor?>? mouseCursor;
 
   /// Allowed way for the user to interact with the [Slider].
   ///
@@ -404,7 +404,7 @@ class AnnotatedSliderThemeData with Diagnosticable {
   /// If [SliderThemeData.thumbShape] is [HandleThumbShape], this property is used to
   /// set the size of the thumb. Otherwise, the default thumb size is 4 pixels for the
   /// width and 44 pixels for the height.
-  final MaterialStateProperty<Size?>? thumbSize;
+  final WidgetStateProperty<Size?>? thumbSize;
 
   /// The size of the gap between the active and inactive tracks of the [GappedSliderTrackShape].
   ///
@@ -475,10 +475,10 @@ class AnnotatedSliderThemeData with Diagnosticable {
     TextStyle? markerLabelTextStyle,
     double? minThumbSeparation,
     RangeThumbSelector? thumbSelector,
-    MaterialStateProperty<MouseCursor?>? mouseCursor,
+    WidgetStateProperty<MouseCursor?>? mouseCursor,
     SliderInteraction? allowedInteraction,
     EdgeInsetsGeometry? padding,
-    MaterialStateProperty<Size?>? thumbSize,
+    WidgetStateProperty<Size?>? thumbSize,
     double? trackGap,
     bool? year2023,
   }) {
@@ -648,7 +648,7 @@ class AnnotatedSliderThemeData with Diagnosticable {
       mouseCursor: t < 0.5 ? a.mouseCursor : b.mouseCursor,
       allowedInteraction: t < 0.5 ? a.allowedInteraction : b.allowedInteraction,
       padding: EdgeInsetsGeometry.lerp(a.padding, b.padding, t),
-      thumbSize: MaterialStateProperty.lerp<Size?>(
+      thumbSize: WidgetStateProperty.lerp<Size?>(
         a.thumbSize,
         b.thumbSize,
         t,
@@ -972,7 +972,7 @@ class AnnotatedSliderThemeData with Diagnosticable {
       ),
     );
     properties.add(
-      DiagnosticsProperty<MaterialStateProperty<MouseCursor?>>(
+      DiagnosticsProperty<WidgetStateProperty<MouseCursor?>>(
         'mouseCursor',
         mouseCursor,
         defaultValue: defaultData.mouseCursor,
@@ -993,7 +993,7 @@ class AnnotatedSliderThemeData with Diagnosticable {
       ),
     );
     properties.add(
-      DiagnosticsProperty<MaterialStateProperty<Size?>>(
+      DiagnosticsProperty<WidgetStateProperty<Size?>>(
         'thumbSize',
         thumbSize,
         defaultValue: defaultData.thumbSize,
@@ -3796,7 +3796,7 @@ class AnnotatedHandleThumbShape extends AnnotatedSliderComponentShape {
     final Canvas canvas = context.canvas;
     final Size thumbSize =
         sliderTheme.thumbSize!.resolve(
-          <MaterialState>{},
+          <WidgetState>{},
         )!; // This is resolved in the paint method.
     final RRect rrect = RRect.fromRectAndRadius(
       Rect.fromCenter(
