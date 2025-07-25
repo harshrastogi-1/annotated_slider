@@ -51,6 +51,10 @@ class AnnotatedSlider extends StatefulWidget {
              (secondaryTrackValue >= min && secondaryTrackValue <= max),
          'SecondaryValue $secondaryTrackValue is not between $min and $max',
        ),
+       assert(
+         (markerLabel?.length == markerLabelPosition?.length),
+         'Marker Position length & Marker Label Position length should be same ',
+       ),
        assert(divisions == null || divisions > 0);
   const AnnotatedSlider.adaptive({
     super.key,
