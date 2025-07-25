@@ -1,9 +1,9 @@
 # annotated_slider
 
 A powerful and customizable Flutter slider widget that supports **annotations**, **marker labels**, **custom marker shapes**, and **tick marks** — ideal for building intuitive UI components where users need visual cues along a slider.
-![Screenshot 2025-07-25 at 11.10.01 PM.png](../../../../var/folders/7b/bbvs4bsd2ng1wxqdbx1595w40000gn/T/TemporaryItems/NSIRD_screencaptureui_GYrRmg/Screenshot%202025-07-25%20at%2011.10.01%E2%80%AFPM.png)
-![Screenshot 2025-07-25 at 11.12.03 PM.png](../../../../var/folders/7b/bbvs4bsd2ng1wxqdbx1595w40000gn/T/TemporaryItems/NSIRD_screencaptureui_HIjZQ7/Screenshot%202025-07-25%20at%2011.12.03%E2%80%AFPM.png)
-![Screenshot_20250725_231704.png](../../Downloads/Screenshot_20250725_231704.png)
+![Slider Demo 1](assets/sample1.png)
+![Slider Demo 2](assets/sample2.png)
+![Slider Demo 3](assets/sample3.png)
 
 
 [![Pub Version](https://img.shields.io/pub/v/annotated_slider)](https://pub.dev/packages/annotated_slider)
