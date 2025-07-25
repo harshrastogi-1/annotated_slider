@@ -111,8 +111,8 @@ class AnnotatedSlider extends StatefulWidget {
   final bool autofocus;
   final SliderInteraction? allowedInteraction;
   final _SliderType _sliderType;
-  final String? markerLabel;
-  final double? markerLabelPosition;
+  final List<String>? markerLabel;
+  final List<double>? markerLabelPosition;
   @override
   State<AnnotatedSlider> createState() => _AnnotatedSliderState();
   @override
@@ -651,8 +651,8 @@ class _SliderRenderObjectWidget extends LeafRenderObjectWidget {
   final bool hasFocus;
   final bool hovering;
   final SliderInteraction allowedInteraction;
-  final String? markerLabel;
-  final double? markerLabelPosition;
+  final List<String>? markerLabel;
+  final List<double>? markerLabelPosition;
   @override
   _RenderSlider createRenderObject(BuildContext context) {
     return _RenderSlider(
@@ -726,8 +726,8 @@ class _RenderSlider extends RenderBox with RelayoutWhenSystemFontsChangeMixin {
     required bool hovering,
     required DeviceGestureSettings gestureSettings,
     required SliderInteraction allowedInteraction,
-    required String? markerLabel,
-    required double? markerLabelPosition,
+    required List<String>? markerLabel,
+    required List<double>? markerLabelPosition,
   }) : assert(value >= 0.0 && value <= 1.0),
        assert(
          secondaryTrackValue == null ||
@@ -819,8 +819,8 @@ class _RenderSlider extends RenderBox with RelayoutWhenSystemFontsChangeMixin {
   bool _active = false;
   double _currentDragValue = 0.0;
   Rect? overlayRect;
-  final String? _markerLabel;
-  final double? _markerLabelPosition;
+  final List<String>? _markerLabel;
+  final List<double>? _markerLabelPosition;
 
   // This rect is used in gesture calculations, where the gesture coordinates
   // are relative to the sliders origin. Therefore, the offset is passed as
@@ -913,7 +913,7 @@ class _RenderSlider extends RenderBox with RelayoutWhenSystemFontsChangeMixin {
   }
 
   String? get label => _label;
-  String? get markerLabel => _markerLabel;
+  List<String>? get markerLabel => _markerLabel;
   String? _label;
   set label(String? value) {
     if (value == _label) {
@@ -1379,34 +1379,57 @@ class _RenderSlider extends RenderBox with RelayoutWhenSystemFontsChangeMixin {
     const double containerRadius = 6.0;
 
     // Use decimal position directly (e.g., 0.6 for 60%)
-    final double midX =
-        trackRect.left + trackRect.width * (_markerLabelPosition ?? 0.0);
-    final double midY = trackRect.center.dy + 5;
+    for (int i = 0; i < (_markerLabelPosition?.length ?? 0); i++) {
+      final double midX =
+          trackRect.left + trackRect.width * (_markerLabelPosition?[i] ?? 0.0);
+      final double midY = trackRect.center.dy + 5;
 
-    final Offset markerPosition = offset + Offset(midX, midY);
-    // 1) Build your TextSpan with the style you provide
-    if (_markerLabel != null) {
-      _markerLabelTextPainter
-        ..text = TextSpan(
-          style: _sliderTheme.markerLabelTextStyle,
-          text: _markerLabel,
-        )
-        ..textDirection = textDirection
-        ..textScaleFactor = textScaleFactor
-        ..layout();
-      final double textX =
-          markerPosition.dx - (_markerLabelTextPainter.width / 100);
-      final double textY =
-          markerPosition.dy -
-          containerRadius -
-          trackRect.center.dy -
-          _markerLabelTextPainter.height;
-      final Offset textOffset = Offset(textX, textY);
-      _markerLabelTextPainter.paint(context.canvas, textOffset);
-      _markerLabelTextPainter.paint(context.canvas, textOffset);
+      final Offset markerPosition = offset + Offset(midX, midY);
+      // 1) Build your TextSpan with the style you provide
+      if (_markerLabel != null) {
+        _markerLabelTextPainter
+          ..text = TextSpan(
+            style: _sliderTheme.markerLabelTextStyle,
+            text: _markerLabel[i],
+          )
+          ..textDirection = textDirection
+          ..textScaleFactor = textScaleFactor
+          ..layout();
+        final double textX =
+            markerPosition.dx - (_markerLabelTextPainter.width / 2);
+
+        final double textY =
+            markerPosition.dy -
+            containerRadius -
+            trackRect.center.dy -
+            _markerLabelTextPainter.height;
+        final Offset textOffset = Offset(textX, textY);
+        _markerLabelTextPainter.paint(context.canvas, textOffset);
+      }
     }
-
     if (_sliderTheme.markerShape != null) {
+      if (_sliderTheme.markerShape != null) {
+        for (int i = 0; i < (_markerLabelPosition?.length ?? 0); i++) {
+          final double markerX =
+              trackRect.left + trackRect.width * (_markerLabelPosition![i]);
+          final double markerY = trackRect.center.dy;
+          final Offset markerCenter = offset + Offset(markerX, markerY);
+
+          _sliderTheme.markerShape!.paint(
+            context,
+            offset, // This remains the full slider offset
+            parentBox: this,
+            sliderTheme: _sliderTheme,
+            enableAnimation: _enableAnimation,
+            textDirection: _textDirection,
+            thumbCenter: markerCenter, // ✅ Pass this so shape renders correctly
+            secondaryOffset: secondaryOffset,
+            isDiscrete: isDiscrete,
+            isEnabled: isInteractive,
+          );
+        }
+      }
+
       _sliderTheme.markerShape!.paint(
         context,
         offset,
@@ -1471,7 +1494,7 @@ class _RenderSlider extends RenderBox with RelayoutWhenSystemFontsChangeMixin {
         }
       }
     }
-    const double tolerance = 0.05; // 1% match
+    const double tolerance = .5;
     if (isInteractive &&
         label != null &&
         !_valueIndicatorAnimation.isDismissed) {
@@ -1493,19 +1516,22 @@ class _RenderSlider extends RenderBox with RelayoutWhenSystemFontsChangeMixin {
               sizeWithOverflow: screenSize.isEmpty ? size : screenSize,
             );
           }
-          if ((_value - _markerLabelPosition!).abs() < tolerance) {
-            _sliderTheme.markerShape?.paint(
-              context,
-              offset,
-              parentBox: this,
-              sliderTheme: _sliderTheme,
-              enableAnimation: _enableAnimation,
-              textDirection: _textDirection,
-              thumbCenter: thumbCenter,
-              secondaryOffset: secondaryOffset,
-              isDiscrete: isDiscrete,
-              isEnabled: isInteractive,
-            );
+
+          for (int i = 0; i < (_markerLabelPosition?.length ?? 0); i++) {
+            if ((_value - _markerLabelPosition![i]).abs() < tolerance) {
+              _sliderTheme.markerShape?.paint(
+                context,
+                offset,
+                parentBox: this,
+                sliderTheme: _sliderTheme,
+                enableAnimation: _enableAnimation,
+                textDirection: _textDirection,
+                thumbCenter: thumbCenter,
+                secondaryOffset: secondaryOffset,
+                isDiscrete: isDiscrete,
+                isEnabled: isInteractive,
+              );
+            }
           }
         };
       }
@@ -1526,19 +1552,21 @@ class _RenderSlider extends RenderBox with RelayoutWhenSystemFontsChangeMixin {
       sizeWithOverflow: screenSize.isEmpty ? size : screenSize,
     );
 
-    if ((_value - _markerLabelPosition!).abs() < tolerance) {
-      _sliderTheme.markerShape!.paint(
-        context,
-        offset,
-        parentBox: this,
-        sliderTheme: _sliderTheme,
-        enableAnimation: _enableAnimation,
-        textDirection: _textDirection,
-        thumbCenter: thumbCenter,
-        secondaryOffset: secondaryOffset,
-        isDiscrete: isDiscrete,
-        isEnabled: isInteractive,
-      );
+    for (int i = 0; i < (_markerLabelPosition?.length ?? 0); i++) {
+      if ((_value - _markerLabelPosition![i]).abs() < tolerance) {
+        _sliderTheme.markerShape!.paint(
+          context,
+          offset,
+          parentBox: this,
+          sliderTheme: _sliderTheme,
+          enableAnimation: _enableAnimation,
+          textDirection: _textDirection,
+          thumbCenter: thumbCenter,
+          secondaryOffset: secondaryOffset,
+          isDiscrete: isDiscrete,
+          isEnabled: isInteractive,
+        );
+      }
     }
   }
 

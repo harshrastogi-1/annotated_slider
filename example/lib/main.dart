@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:annotated_slider/annotated_slider.dart';
 import 'package:annotated_slider/annotated_slider_theme.dart';
 import 'package:flutter/material.dart';
@@ -11,12 +13,9 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-        useMaterial3: true,
-      ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
+      title: 'Annotated Slider Demo',
+      theme: ThemeData(useMaterial3: true),
+      home: const MyHomePage(title: 'Flutter Annotated Slider Example'),
     );
   }
 }
@@ -31,14 +30,7 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
   var _value = 0.0;
-
-  void _incrementCounter() {
-    setState(() {
-      _counter++;
-    });
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -54,16 +46,12 @@ class _MyHomePageState extends State<MyHomePage> {
             AnnotatedSliderTheme(
               data: AnnotatedSliderTheme.of(context).copyWith(
                 trackHeight: 10.0,
-                activeTrackColor: Color(0xFF017AFF),
-                activeTickMarkColor: Color(0xFF017AFF),
-                valueIndicatorColor: Color(0xFF017AFF),
                 trackShape: const AnnotatedRoundedRectSliderTrackShape(),
-                thumbShape: DoubleArrowThumbShape(),
                 showValueIndicator: ShowValueIndicator.onlyForDiscrete,
                 overlayShape: const AnnotatedRoundSliderOverlayShape(
                   overlayRadius: 24.0,
                 ),
-                markerShape: DOTShape(.7),
+                markerShape: DOTShape([.3, .5, .7]),
                 tickMarkShape: const AnnotatedRoundSliderTickMarkShape(),
                 valueIndicatorShape:
                     const AnnotatedPaddleSliderValueIndicatorShape(),
@@ -80,10 +68,10 @@ class _MyHomePageState extends State<MyHomePage> {
                 min: 0.0,
                 max: 1000.0,
                 label: _value.toString(),
-                markerLabel: "Ideal cover",
+                markerLabel: ["Ideal cover", "Harsh", "Check"],
                 value: _value,
                 divisions: 100,
-                markerLabelPosition: .75,
+                markerLabelPosition: [.3, .5, .7],
                 onChangeEnd: (value) {},
                 onChanged: (double value) {
                   setState(() {
@@ -92,94 +80,67 @@ class _MyHomePageState extends State<MyHomePage> {
                 },
               ),
             ),
-            const Text('You have pushed the button this many times:'),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headlineMedium,
-            ),
           ],
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
     );
   }
 }
 
-class DoubleArrowThumbShape extends AnnotatedSliderComponentShape {
-  @override
-  Size getPreferredSize(bool isEnabled, bool isDiscrete) {
-    return const Size(20, 16);
-  }
-
-  @override
-  void paint(
-    PaintingContext context,
-    Offset center, {
-    Animation<double>? activationAnimation,
-    Animation<double>? enableAnimation,
-    bool? isDiscrete,
-    TextPainter? labelPainter,
-    RenderBox? parentBox,
-    AnnotatedSliderThemeData? sliderTheme,
-    TextDirection? textDirection,
-    double? value,
-    double? textScaleFactor,
-    Size? sizeWithOverflow,
-  }) {
-    final Canvas canvas = context.canvas;
-
-    const radius = 16.0;
-    const triangleWidth = 8.0;
-    const triangleHeight = 11.0;
-
-    final leftTrianglePath =
-        Path()
-          ..moveTo(center.dx - 2, center.dy - triangleHeight / 2)
-          ..lineTo(center.dx - 2, center.dy + triangleHeight / 2)
-          ..lineTo(center.dx - 2 - triangleWidth, center.dy)
-          ..close();
-
-    final rightTrianglePath =
-        Path()
-          ..moveTo(center.dx + 2, center.dy - triangleHeight / 2)
-          ..lineTo(center.dx + 2, center.dy + triangleHeight / 2)
-          ..lineTo(center.dx + 2 + triangleWidth, center.dy)
-          ..close();
-
-    canvas.drawCircle(center, radius, Paint()..color = Color(0xFF017AFF));
-  }
-}
-
 class DOTShape extends AnnotatedSliderMarkerShape {
-  final double value; // 0.0 to 1.0 normalized
+  final List<double> value; // normalized value 0.0 to 1.0
 
-  const DOTShape(this.value);
+  DOTShape(this.value);
 
   static const double containerRadius = 6.0;
+  final List<Rect> markerPainter = [];
 
   @override
-  double get markerValue => value;
+  List<double> get markerValue => value;
 
   @override
-  Rect getPreferredRect({
+  List<Rect> getPreferredRect({
     required RenderBox parentBox,
     Offset offset = Offset.zero,
     required AnnotatedSliderThemeData sliderTheme,
     bool? isEnabled,
     bool? isDiscrete,
   }) {
-    final double trackWidth = parentBox.size.width;
-    final double markerX = offset.dx + trackWidth * value;
-    final double markerY = offset.dy;
+    final double trackHeight = sliderTheme.trackHeight ?? 4.0;
 
-    return Rect.fromCircle(
-      center: Offset(markerX, markerY - 20), // move it 20px above track
-      radius: containerRadius,
-    );
+    final double thumbWidth =
+        sliderTheme.thumbShape
+            ?.getPreferredSize(isEnabled ?? true, isDiscrete ?? false)
+            .width ??
+        0.0;
+
+    final double overlayWidth =
+        sliderTheme.overlayShape
+            ?.getPreferredSize(isEnabled ?? true, isDiscrete ?? false)
+            .width ??
+        0.0;
+
+    final double trackLeft =
+        offset.dx + math.max(overlayWidth / 2, thumbWidth / 2);
+    final double trackTop =
+        offset.dy + (parentBox.size.height - trackHeight) / 2;
+    final double trackRight =
+        trackLeft + parentBox.size.width - math.max(thumbWidth, overlayWidth);
+    final double trackBottom = trackTop + trackHeight;
+
+    final double trackWidth = trackRight - trackLeft;
+
+    for (int i = 0; i < value.length; i++) {
+      final double markerX = trackLeft + (trackWidth * value[i]);
+      final double markerY = (trackTop + trackBottom) / 2;
+      markerPainter.add(
+        Rect.fromCircle(
+          center: Offset(markerX, markerY),
+          radius: containerRadius,
+        ),
+      );
+    }
+    return markerPainter;
   }
 
   @override
@@ -196,24 +157,29 @@ class DOTShape extends AnnotatedSliderMarkerShape {
     required TextDirection textDirection,
   }) {
     final Canvas canvas = context.canvas;
-    final double trackWidth = parentBox.size.width;
-    final double markerX = offset.dx + trackWidth * value;
-    final double markerY = thumbCenter.dy;
 
-    final Offset markerPosition = Offset(markerX, markerY);
+    final List<Rect> markerRect = getPreferredRect(
+      parentBox: parentBox,
+      offset: offset,
+      sliderTheme: sliderTheme,
+      isEnabled: isEnabled,
+      isDiscrete: isDiscrete,
+    );
 
     final Paint fillPaint =
         Paint()
-          ..color = Colors.white
+          ..color = Colors.white38
           ..style = PaintingStyle.fill;
 
     final Paint borderPaint =
         Paint()
-          ..color = Colors.green
+          ..color = Colors.black
           ..style = PaintingStyle.stroke
           ..strokeWidth = 4.0;
 
-    canvas.drawCircle(markerPosition, containerRadius, fillPaint);
-    canvas.drawCircle(markerPosition, containerRadius, borderPaint);
+    for (int i = 0; i < markerRect.length; i++) {
+      canvas.drawCircle(markerRect[i].center, containerRadius, fillPaint);
+      canvas.drawCircle(markerRect[i].center, containerRadius, borderPaint);
+    }
   }
 }

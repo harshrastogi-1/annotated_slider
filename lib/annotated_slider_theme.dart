@@ -1266,9 +1266,9 @@ abstract class AnnotatedSliderMarkerShape {
   /// If your shape is based on value positioning (0.0 to 1.0),
   /// override this to return a custom value.
   /// Default: -1 (invalid).
-  double get markerValue => -1;
+  List<double> get markerValue => [-1];
 
-  Rect getPreferredRect({
+  List<Rect> getPreferredRect({
     required RenderBox parentBox,
     Offset offset = Offset.zero,
     required AnnotatedSliderThemeData sliderTheme,
